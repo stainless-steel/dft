@@ -5,4 +5,9 @@ authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/hilbert-space/fft"
 homepage = "https://github.com/hilbert-space/fft"
-description = "FFT."
+description = """
+The package provides an algorithm to compute the discrete Fourier transform and
+its inverse."""
+
+[dev-dependencies]
+assert = "*"
