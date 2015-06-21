@@ -1,96 +1,139 @@
-#![feature(step_by)]
+use std::slice;
+
+mod complex;
+pub use complex::c64;
+
+/// A means of obtaining a slice of mutable complex numbers.
+pub trait AsMutComplex<'l> {
+    fn as_mut_complex(self) -> &'l mut [c64];
+}
+
+impl<'l> AsMutComplex<'l> for &'l mut [c64] {
+    #[inline(always)]
+    fn as_mut_complex(self) -> &'l mut [c64] {
+        self
+    }
+}
+
+impl<'l> AsMutComplex<'l> for &'l mut [f64] {
+    /// Treat the slice as a collection of pairs of real and imaginary parts and
+    /// reinterpret it as a slice of complex numbers.
+    ///
+    /// ## Panics
+    ///
+    /// The function panics if the number of elements is not even.
+    #[inline]
+    fn as_mut_complex(self) -> &'l mut [c64] {
+        unsafe {
+            let length = self.len();
+            assert!(length % 2 == 0, "the number of elements should be even");
+            slice::from_raw_parts_mut(self.as_mut_ptr() as *mut _, length / 2)
+        }
+    }
+}
+
+impl<'l> AsMutComplex<'l> for &'l mut Vec<f64> {
+    #[inline]
+    fn as_mut_complex(self) -> &'l mut [c64] {
+        <&mut [f64]>::as_mut_complex(&mut *self)
+    }
+}
 
 /// Perform the Fourier transform.
 ///
-/// `data` should contain `n` complex numbers where `n` is a power of two. Each
-/// complex number is stored as a pair of `f64`s so that the first is the real
-/// part and the second is the corresponding imaginary part. Hence, the total
-/// length of `data` should be `2 × n`.
-///
-/// # Panics
-///
-/// The function panics if `data.len()` is not even or `data.len() / 2` is not a
-/// power of two.
+/// The number of points should be a power of two.
 #[inline(always)]
-pub fn forward(data: &mut [f64]) {
-    transform(data, 1.0);
-}
+pub fn forward<'l, T: AsMutComplex<'l>>(data: T) {
+    let data = data.as_mut_complex();
 
-/// Perform the inverse Fourier transform.
-///
-/// `data` should contain `n` complex numbers where `n` is a power of two. Each
-/// complex number is stored as a pair of `f64`s so that the first is the real
-/// part and the second is the corresponding imaginary part. Hence, the total
-/// length of `data` should be `2 × n`.
-///
-/// # Panics
-///
-/// The function panics if `data.len()` is not even or `data.len() / 2` is not a
-/// power of two.
-#[inline(always)]
-pub fn inverse(data: &mut [f64]) {
-    transform(data, -1.0);
-}
-
-fn transform(data: &mut [f64], isign: f64) {
-    use std::f64::consts::PI;
-
-    let l = data.len();
-    if l % 2 != 0 {
-        panic!("expected the length of the data to be even");
-    }
-
-    let n = l / 2;
+    let n = data.len();
     if n < 1 || n & (n - 1) != 0 {
         panic!("expected the number of points to be a power of two");
     }
 
-    let nn = n << 1;
+    rearrange(data, n);
+    perform(data, n, false);
+}
 
-    let mut j = 1;
-    for i in (1..nn).step_by(2) {
-        if j > i {
-            data.swap(j - 1, i - 1);
-            data.swap(j, i);
-        }
-        let mut m = n;
-        while m >= 2 && j > m {
-            j -= m;
-            m >>= 1;
-        }
-        j += m;
+/// Perform the inverse Fourier transform.
+///
+/// The number of points should be a power of two.
+#[inline(always)]
+pub fn inverse<'l, T: AsMutComplex<'l>>(data: T, scaling: bool) {
+    let data = data.as_mut_complex();
+
+    let n = data.len();
+    if n < 1 || n & (n - 1) != 0 {
+        panic!("expected the number of points to be a power of two");
     }
 
-    let mut mmax = 2;
-    while nn > mmax {
-        let istep = mmax << 1;
-        let theta = isign * (2.0 * PI / mmax as f64);
-        let wtemp = (0.5 * theta).sin();
-        let wpr = -2.0 * wtemp * wtemp;
-        let wpi = theta.sin();
-        let mut wr = 1.0;
-        let mut wi = 0.0;
-        for m in (1..mmax).step_by(2) {
-            for i in (m..(nn + 1)).step_by(istep) {
-                let j = i + mmax;
-                let tempr = wr * data[j - 1] - wi * data[j];
-                let tempi = wr * data[j] + wi * data[j - 1];
-                data[j - 1] = data[i - 1] - tempr;
-                data[j] = data[i] - tempi;
-                data[i - 1] += tempr;
-                data[i] += tempi;
+    rearrange(data, n);
+    perform(data, n, true);
+    if scaling {
+        scale(data, n);
+    }
+}
+
+#[inline(always)]
+fn rearrange(data: &mut [c64], n: usize) {
+    let mut target = 0;
+    for position in 0..n {
+        if target > position {
+            data.swap(position, target);
+        }
+        let mut mask = n >> 1;
+        while target & mask != 0 {
+            target &= !mask;
+            mask >>= 1;
+        }
+        target |= mask;
+    }
+}
+
+#[inline(always)]
+fn perform(data: &mut [c64], n: usize, inverse: bool) {
+    use std::f64::consts::PI;
+
+    let pi = if inverse { PI } else { -PI };
+
+    let mut step = 1;
+    while step < n {
+        let jump = step << 1;
+        let delta = pi / step as f64;
+        let sine = (0.5 * delta).sin();
+        let multiplier = c64(-2.0 * sine * sine, delta.sin());
+        let mut factor = c64(1.0, 0.0);
+        for group in 0..step {
+            let mut pair = group;
+            while pair < n {
+                let match_pair = pair + step;
+                let product = factor * data[match_pair];
+                data[match_pair] = data[pair] - product;
+                data[pair] = data[pair] + product;
+                pair += jump;
             }
-            let wtemp = wr;
-            wr = wr * wpr - wi * wpi + wr;
-            wi = wi * wpr + wtemp * wpi + wi;
+            factor = multiplier * factor + factor;
         }
-        mmax = istep;
+        step <<= 1;
     }
+}
 
-    if isign == -1.0 {
-        let scale = 1.0 / n as f64;
-        for i in 0..l {
-            data[i] *= scale;
-        }
+#[inline(always)]
+fn scale(data: &mut [c64], n: usize) {
+    let factor = 1.0 / n as f64;
+    for position in 0..n {
+        data[position] = data[position] * factor;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use c64;
+    use std::mem;
+
+    #[test]
+    fn size_of() {
+        assert_eq!(mem::size_of::<c64>(), 2 * mem::size_of::<f64>());
+        assert_eq!(mem::size_of::<[c64; 42]>(), 2 * mem::size_of::<[f64; 42]>());
     }
 }
