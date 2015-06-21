@@ -4,15 +4,15 @@ extern crate fft;
 mod fixtures;
 
 #[test]
-fn transform_forward() {
+fn forward() {
     let mut data = fixtures::TIME_DATA.to_vec();
-    fft::transform(&mut data, fft::Direction::Forward);
+    fft::forward(&mut data);
     assert::close(&data, &fixtures::FREQUENCY_DATA[..], 1e-13);
 }
 
 #[test]
-fn transform_inverse() {
+fn inverse() {
     let mut data = fixtures::FREQUENCY_DATA.to_vec();
-    fft::transform(&mut data, fft::Direction::Inverse);
+    fft::inverse(&mut data);
     assert::close(&data, &fixtures::TIME_DATA[..], 1e-13);
 }

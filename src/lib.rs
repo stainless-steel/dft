@@ -1,24 +1,22 @@
 #![feature(step_by)]
 
-/// A direction of the Fourier transform.
-pub enum Direction {
-    /// From the time domain to the frequency domain.
-    Forward,
-    /// From the frequency domain to the time domain.
-    Inverse,
+/// Perform the Fourier transform.
+#[inline(always)]
+pub fn forward(data: &mut [f64]) {
+    transform(data, 1.0);
 }
 
-/// Perform the Fourier transform.
-pub fn transform(data: &mut [f64], direction: Direction) {
+/// Perform the inverse Fourier transform.
+#[inline(always)]
+pub fn inverse(data: &mut [f64]) {
+    transform(data, -1.0);
+}
+
+fn transform(data: &mut [f64], isign: f64) {
     use std::f64::consts::PI;
 
     let n = data.len() / 2;
     let nn = n << 1;
-
-    let isign = match direction {
-        Direction::Forward => 1.0,
-        Direction::Inverse => -1.0,
-    };
 
     let mut j = 1;
     for i in (1..nn).step_by(2) {
@@ -60,7 +58,7 @@ pub fn transform(data: &mut [f64], direction: Direction) {
         mmax = istep;
     }
 
-    if let Direction::Inverse = direction {
+    if isign == -1.0 {
         let scale = 1.0 / n as f64;
         for i in 0..(2 * n) {
             data[i] *= scale;
