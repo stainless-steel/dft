@@ -11,7 +11,7 @@ extern crate test;
 #[bench] fn forward_4096(bencher: &mut test::Bencher) { forward(4096, bencher); }
 
 fn forward(size: usize, bencher: &mut test::Bencher) {
-    let mut data = vec![42.0; 2 * size];
+    let mut data = vec![fft::c64(42.0, 0.0); size];
     bencher.iter(|| {
         test::black_box(fft::forward(&mut data));
     });
