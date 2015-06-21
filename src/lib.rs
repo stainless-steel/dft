@@ -9,49 +9,78 @@
 
 extern crate complex;
 
-use complex::c64;
+use complex::{Complex, c64};
 use std::slice;
 
 /// A means of obtaining a slice of mutable complex numbers.
 pub trait AsMutComplex<'l> {
-    fn as_mut_complex(self) -> &'l mut [c64];
+    type Complex: Complex + 'l;
+
+    fn as_mut_complex(self) -> &'l mut [Self::Complex];
 }
 
-impl<'l> AsMutComplex<'l> for &'l mut [c64] {
-    #[inline(always)]
-    fn as_mut_complex(self) -> &'l mut [c64] {
-        self
-    }
-}
+macro_rules! implement(
+    ($complex:ty) => (
+        impl<'l> AsMutComplex<'l> for &'l mut [$complex] {
+            type Complex = $complex;
 
-impl<'l> AsMutComplex<'l> for &'l mut [f64] {
-    /// Treat the slice as a collection of pairs of real and imaginary parts and
-    /// reinterpret it as a slice of complex numbers.
-    ///
-    /// ## Panics
-    ///
-    /// The function panics if the number of elements is not even.
-    #[inline]
-    fn as_mut_complex(self) -> &'l mut [c64] {
-        unsafe {
-            let length = self.len();
-            assert!(length % 2 == 0, "the number of elements should be even");
-            slice::from_raw_parts_mut(self.as_mut_ptr() as *mut _, length / 2)
+            #[inline(always)]
+            fn as_mut_complex(self) -> &'l mut [Self::Complex] {
+                self
+            }
         }
-    }
-}
 
-impl<'l> AsMutComplex<'l> for &'l mut Vec<f64> {
-    #[inline]
-    fn as_mut_complex(self) -> &'l mut [c64] {
-        <&mut [f64]>::as_mut_complex(&mut *self)
-    }
-}
+        impl<'l> AsMutComplex<'l> for &'l mut Vec<$complex> {
+            type Complex = $complex;
+
+            #[inline]
+            fn as_mut_complex(self) -> &'l mut [Self::Complex] {
+                <&mut [$complex]>::as_mut_complex(&mut *self)
+            }
+        }
+    );
+);
+
+implement!(c64);
+
+macro_rules! implement(
+    ($complex:ty, $real:ty) => (
+        impl<'l> AsMutComplex<'l> for &'l mut [$real] {
+            type Complex = $complex;
+
+            /// Treat the slice as a collection of pairs of real and imaginary
+            /// parts and reinterpret it as a slice of complex numbers.
+            ///
+            /// ## Panics
+            ///
+            /// The function panics if the number of elements is not even.
+            #[inline]
+            fn as_mut_complex(self) -> &'l mut [Self::Complex] {
+                unsafe {
+                    let length = self.len();
+                    assert!(length % 2 == 0, "the number of elements should be even");
+                    slice::from_raw_parts_mut(self.as_mut_ptr() as *mut _, length / 2)
+                }
+            }
+        }
+
+        impl<'l> AsMutComplex<'l> for &'l mut Vec<$real> {
+            type Complex = $complex;
+
+            #[inline]
+            fn as_mut_complex(self) -> &'l mut [Self::Complex] {
+                <&mut [$real]>::as_mut_complex(&mut *self)
+            }
+        }
+    );
+);
+
+implement!(c64, f64);
 
 /// Perform the Fourier transform.
 ///
 /// The number of points should be a power of two.
-pub fn forward<'l, T: AsMutComplex<'l>>(data: T) {
+pub fn forward<'l, T>(data: T) where T: AsMutComplex<'l, Complex=c64> {
     let data = data.as_mut_complex();
 
     let n = data.len();
@@ -66,7 +95,7 @@ pub fn forward<'l, T: AsMutComplex<'l>>(data: T) {
 /// Perform the inverse Fourier transform.
 ///
 /// The number of points should be a power of two.
-pub fn inverse<'l, T: AsMutComplex<'l>>(data: T, scaling: bool) {
+pub fn inverse<'l, T>(data: T, scaling: bool) where T: AsMutComplex<'l, Complex=c64> {
     let data = data.as_mut_complex();
 
     let n = data.len();
