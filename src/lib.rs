@@ -1,12 +1,32 @@
 #![feature(step_by)]
 
 /// Perform the Fourier transform.
+///
+/// `data` should contain `n` complex numbers where `n` is a power of two. Each
+/// complex number is stored as a pair of `f64`s so that the first is the real
+/// part and the second is the corresponding imaginary part. Hence, the total
+/// length of `data` should be `2 × n`.
+///
+/// # Panics
+///
+/// The function panics if `data.len()` is not even or `data.len() / 2` is not a
+/// power of two.
 #[inline(always)]
 pub fn forward(data: &mut [f64]) {
     transform(data, 1.0);
 }
 
 /// Perform the inverse Fourier transform.
+///
+/// `data` should contain `n` complex numbers where `n` is a power of two. Each
+/// complex number is stored as a pair of `f64`s so that the first is the real
+/// part and the second is the corresponding imaginary part. Hence, the total
+/// length of `data` should be `2 × n`.
+///
+/// # Panics
+///
+/// The function panics if `data.len()` is not even or `data.len() / 2` is not a
+/// power of two.
 #[inline(always)]
 pub fn inverse(data: &mut [f64]) {
     transform(data, -1.0);
@@ -15,7 +35,16 @@ pub fn inverse(data: &mut [f64]) {
 fn transform(data: &mut [f64], isign: f64) {
     use std::f64::consts::PI;
 
-    let n = data.len() / 2;
+    let l = data.len();
+    if l % 2 != 0 {
+        panic!("expected the length of the data to be even");
+    }
+
+    let n = l / 2;
+    if n < 1 || n & (n - 1) != 0 {
+        panic!("expected the number of points to be a power of two");
+    }
+
     let nn = n << 1;
 
     let mut j = 1;
@@ -60,7 +89,7 @@ fn transform(data: &mut [f64], isign: f64) {
 
     if isign == -1.0 {
         let scale = 1.0 / n as f64;
-        for i in 0..(2 * n) {
+        for i in 0..l {
             data[i] *= scale;
         }
     }
