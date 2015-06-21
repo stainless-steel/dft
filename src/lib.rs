@@ -11,7 +11,7 @@ extern crate complex;
 
 pub use complex::c64;
 
-/// Perform the Fourier transform.
+/// Perform the forward transform.
 ///
 /// The number of points should be a power of two.
 ///
@@ -27,7 +27,7 @@ pub fn forward(data: &mut [c64]) {
     perform(data, n, false);
 }
 
-/// Perform the inverse Fourier transform.
+/// Perform the inverse transform.
 ///
 /// The number of points should be a power of two.
 ///
