@@ -51,7 +51,6 @@ impl<'l> AsMutComplex<'l> for &'l mut Vec<f64> {
 /// Perform the Fourier transform.
 ///
 /// The number of points should be a power of two.
-#[inline(always)]
 pub fn forward<'l, T: AsMutComplex<'l>>(data: T) {
     let data = data.as_mut_complex();
 
@@ -67,7 +66,6 @@ pub fn forward<'l, T: AsMutComplex<'l>>(data: T) {
 /// Perform the inverse Fourier transform.
 ///
 /// The number of points should be a power of two.
-#[inline(always)]
 pub fn inverse<'l, T: AsMutComplex<'l>>(data: T, scaling: bool) {
     let data = data.as_mut_complex();
 
