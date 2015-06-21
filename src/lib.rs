@@ -1,7 +1,16 @@
-use std::slice;
+//! [Algorithm][1] to compute the [discrete Fourier transform][2] and its
+//! inverse.
+//!
+//! [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
+//! [2]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-mod complex;
-pub use complex::c64;
+// The implementation is based on:
+// http://www.librow.com/articles/article-10
+
+extern crate complex;
+
+use complex::c64;
+use std::slice;
 
 /// A means of obtaining a slice of mutable complex numbers.
 pub trait AsMutComplex<'l> {
@@ -123,17 +132,5 @@ fn scale(data: &mut [c64], n: usize) {
     let factor = 1.0 / n as f64;
     for position in 0..n {
         data[position] = data[position] * factor;
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use c64;
-    use std::mem;
-
-    #[test]
-    fn size_of() {
-        assert_eq!(mem::size_of::<c64>(), 2 * mem::size_of::<f64>());
-        assert_eq!(mem::size_of::<[c64; 42]>(), 2 * mem::size_of::<[f64; 42]>());
     }
 }
