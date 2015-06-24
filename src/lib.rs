@@ -11,14 +11,18 @@ extern crate complex;
 
 pub use complex::c64;
 
+macro_rules! power_of_two(
+    ($n:expr) => (if $n < 1 || $n & ($n - 1) != 0 {
+        panic!("expected the number of points to be a power of two");
+    });
+);
+
 /// Perform the forward transform.
 ///
 /// The number of points should be a power of two.
 pub fn forward(data: &mut [c64]) {
     let n = data.len();
-    if n < 1 || n & (n - 1) != 0 {
-        panic!("expected the number of points to be a power of two");
-    }
+    power_of_two!(n);
     rearrange(data, n);
     perform(data, n, false);
 }
@@ -28,9 +32,7 @@ pub fn forward(data: &mut [c64]) {
 /// The number of points should be a power of two.
 pub fn inverse(data: &mut [c64], scaling: bool) {
     let n = data.len();
-    if n < 1 || n & (n - 1) != 0 {
-        panic!("expected the number of points to be a power of two");
-    }
+    power_of_two!(n);
     rearrange(data, n);
     perform(data, n, true);
     if scaling {
