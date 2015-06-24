@@ -14,10 +14,6 @@ pub use complex::c64;
 /// Perform the forward transform.
 ///
 /// The number of points should be a power of two.
-///
-/// ## Panics
-///
-/// The function panics if the number of points is not a power of two.
 pub fn forward(data: &mut [c64]) {
     let n = data.len();
     if n < 1 || n & (n - 1) != 0 {
@@ -30,10 +26,6 @@ pub fn forward(data: &mut [c64]) {
 /// Perform the inverse transform.
 ///
 /// The number of points should be a power of two.
-///
-/// ## Panics
-///
-/// The function panics if the number of points is not a power of two.
 pub fn inverse(data: &mut [c64], scaling: bool) {
     let n = data.len();
     if n < 1 || n & (n - 1) != 0 {
