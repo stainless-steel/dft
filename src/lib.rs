@@ -18,5 +18,3 @@ macro_rules! power_of_two(
 
 pub mod complex;
 pub mod real;
-
-pub use complex::{forward, inverse};
