@@ -11,7 +11,7 @@ use number::c64;
 pub fn forward(data: &mut [c64]) {
     let n = power_of_two!(data);
     rearrange(data, n);
-    perform(data, n, false);
+    transform(data, n, false);
 }
 
 /// Perform the backward transform.
@@ -20,7 +20,7 @@ pub fn forward(data: &mut [c64]) {
 pub fn backward(data: &mut [c64]) {
     let n = power_of_two!(data);
     rearrange(data, n);
-    perform(data, n, true);
+    transform(data, n, true);
 }
 
 /// Perform the inverse transform.
@@ -29,7 +29,7 @@ pub fn backward(data: &mut [c64]) {
 pub fn inverse(data: &mut [c64]) {
     let n = power_of_two!(data);
     rearrange(data, n);
-    perform(data, n, true);
+    transform(data, n, true);
     scale(data, n);
 }
 
@@ -48,7 +48,7 @@ fn rearrange(data: &mut [c64], n: usize) {
     }
 }
 
-fn perform(data: &mut [c64], n: usize, inverse: bool) {
+fn transform(data: &mut [c64], n: usize, inverse: bool) {
     let sign = if inverse { 1.0 } else { -1.0 };
     let mut step = 1;
     while step < n {
