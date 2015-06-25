@@ -16,7 +16,7 @@ fn complex_forward() {
 #[test]
 fn complex_inverse() {
     let mut data = fixtures::FREQUENCY_DATA_FOR_COMPLEX.to_vec();
-    fft::complex::inverse(as_c64_mut(&mut data), true);
+    fft::complex::inverse(as_c64_mut(&mut data));
     assert::close(&data, &fixtures::TIME_DATA[..], 1e-14);
 }
 
@@ -39,7 +39,7 @@ fn real_forward() {
 #[test]
 fn real_inverse() {
     let mut data = fixtures::FREQUENCY_DATA_FOR_REAL.to_vec();
-    fft::real::inverse(&mut data, true);
+    fft::real::inverse(&mut data);
     assert::close(&data, &fixtures::TIME_DATA[..], 1e-14);
 }
 

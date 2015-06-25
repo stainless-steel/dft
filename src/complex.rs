@@ -14,16 +14,23 @@ pub fn forward(data: &mut [c64]) {
     perform(data, n, false);
 }
 
-/// Perform the inverse transform.
+/// Perform the backward transform.
 ///
 /// The number of points should be a power of two.
-pub fn inverse(data: &mut [c64], scaling: bool) {
+pub fn backward(data: &mut [c64]) {
     let n = power_of_two!(data);
     rearrange(data, n);
     perform(data, n, true);
-    if scaling {
-        scale(data, n);
-    }
+}
+
+/// Perform the inverse transform.
+///
+/// The number of points should be a power of two.
+pub fn inverse(data: &mut [c64]) {
+    let n = power_of_two!(data);
+    rearrange(data, n);
+    perform(data, n, true);
+    scale(data, n);
 }
 
 fn rearrange(data: &mut [c64], n: usize) {

@@ -28,14 +28,24 @@ pub fn forward(data: &mut [f64]) {
     compose(data, n, false);
 }
 
+/// Perform the backward transform.
+///
+/// The number of points should be a power of two. The data should be packed as
+/// described in `real::forward`.
+pub fn backward(data: &mut [f64]) {
+    let (data, n) = reinterpret!(data);
+    compose(data, n, true);
+    ::complex::backward(data);
+}
+
 /// Perform the inverse transform.
 ///
 /// The number of points should be a power of two. The data should be packed as
 /// described in `real::forward`.
-pub fn inverse(data: &mut [f64], scaling: bool) {
+pub fn inverse(data: &mut [f64]) {
     let (data, n) = reinterpret!(data);
     compose(data, n, true);
-    ::complex::inverse(data, scaling);
+    ::complex::inverse(data);
 }
 
 /// Unpack a compressed representation produced by `real::forward`.
