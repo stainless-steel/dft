@@ -7,7 +7,7 @@ use number::{Complex, c64};
 /// The number of points should be a power of two. The data are replaced by the
 /// positive frequency half of their complex Fourier transform. The real-valued
 /// first and last components of the complex transform are returned as elements
-/// data[0] and data[1], respectively.
+/// `data[0]` and `data[1]`, respectively.
 ///
 /// ## References
 ///
@@ -47,10 +47,11 @@ pub fn forward(data: &mut [f64]) {
         data[i] = part1 + factor * part2;
         data[j] = (part1 - factor * part2).conj();
     }
+
     data[n / 2] = data[n / 2].conj();
 }
 
-/// Expand a compressed representation produced by `real::forward`.
+/// Unpack a compressed representation produced by `real::forward`.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
     power_of_two!(n);
@@ -64,8 +65,7 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
     }
     cdata[n / 2] = c64(data[1], 0.0);
     for i in (n / 2 + 1)..n {
-        let j = n - i;
-        cdata[i] = c64(data[2 * j], -data[2 * j + 1]);
+        cdata[i] = cdata[n - i].conj();
     }
 
     cdata
