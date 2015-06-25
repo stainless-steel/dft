@@ -58,29 +58,26 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
 }
 
 fn compose(data: &mut [c64], n: usize, inverse: bool) {
-    use std::f64::consts::PI;
-
     data[0] = c64(data[0].re() + data[0].im(), data[0].re() - data[0].im());
     if inverse {
         data[0] = data[0] * 0.5;
     }
 
+    let sign = if inverse { 1.0 } else { -1.0 };
     let (multiplier, mut factor) = {
-        let sign = if inverse { 1.0 } else { -1.0 };
-        let delta = sign * PI / n as f64;
-        let sine = (0.5 * delta).sin();
-        (c64(-2.0 * sine * sine, delta.sin()), c64(0.0, -sign))
+        use std::f64::consts::PI;
+        let theta = sign * PI / n as f64;
+        let sine = (0.5 * theta).sin();
+        (c64(-2.0 * sine * sine, theta.sin()), c64(1.0, 0.0))
     };
-
     for i in 1..(n / 2) {
         let j = n - i;
-
-        let part1 = (data[i] + data[j].conj()) * 0.5;
-        let part2 = -(data[i] - data[j].conj()) * 0.5;
-
         factor = multiplier * factor + factor;
-        data[i] = part1 + factor * part2;
-        data[j] = (part1 - factor * part2).conj();
+        let part1 = (data[i] + data[j].conj()) * 0.5;
+        let part2 = (data[i] - data[j].conj()) * 0.5;
+        let product = c64(0.0, sign) * factor * part2;
+        data[i] = part1 + product;
+        data[j] = (part1 - product).conj();
     }
 
     data[n / 2] = data[n / 2].conj();
