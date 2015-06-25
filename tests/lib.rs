@@ -7,40 +7,56 @@ use complex::c64;
 mod fixtures;
 
 #[test]
-fn complex_forward() {
-    let mut data = fixtures::TIME_DATA.to_vec();
+fn complex_forward_128() {
+    let mut data = fixtures::TIME_DATA_256.to_vec();
     fft::complex::forward(as_c64_mut(&mut data));
-    assert::close(&data, &fixtures::FREQUENCY_DATA_FOR_COMPLEX[..], 1e-14);
+    assert::close(&data, &fixtures::FREQUENCY_DATA_128_COMPLEX[..], 1e-14);
 }
 
 #[test]
-fn complex_inverse() {
-    let mut data = fixtures::FREQUENCY_DATA_FOR_COMPLEX.to_vec();
+fn complex_forward_real_256() {
+    let mut data = to_c64(&fixtures::TIME_DATA_256);
+    fft::complex::forward(&mut data);
+    assert::close(as_f64(&data), &fixtures::FREQUENCY_DATA_256_REAL_UNPACKED[..], 1e-13);
+}
+
+#[test]
+fn complex_inverse_128() {
+    let mut data = fixtures::FREQUENCY_DATA_128_COMPLEX.to_vec();
     fft::complex::inverse(as_c64_mut(&mut data));
-    assert::close(&data, &fixtures::TIME_DATA[..], 1e-14);
+    assert::close(&data, &fixtures::TIME_DATA_256[..], 1e-14);
 }
 
 #[test]
-fn real_forward() {
-    let mut data = fixtures::TIME_DATA.to_vec();
-    {
-        let mut data = to_c64(&data);
-        fft::complex::forward(&mut data);
-        assert::close(as_f64(&data), &fixtures::FREQUENCY_DATA_FOR_REAL_UNPACKED[..], 1e-13);
-    }
-    {
-        fft::real::forward(&mut data);
-        assert::close(&data, &fixtures::FREQUENCY_DATA_FOR_REAL[..], 1e-13);
-        let data = fft::real::unpack(&data);
-        assert::close(as_f64(&data), &fixtures::FREQUENCY_DATA_FOR_REAL_UNPACKED[..], 1e-13);
-    }
+fn real_forward_256() {
+    let mut data = fixtures::TIME_DATA_256.to_vec();
+    fft::real::forward(&mut data);
+    assert::close(&data, &fixtures::FREQUENCY_DATA_256_REAL_PACKED[..], 1e-13);
+    let data = fft::real::unpack(&data);
+    assert::close(as_f64(&data), &fixtures::FREQUENCY_DATA_256_REAL_UNPACKED[..], 1e-13);
 }
 
 #[test]
-fn real_inverse() {
-    let mut data = fixtures::FREQUENCY_DATA_FOR_REAL.to_vec();
+fn real_forward_512() {
+    let mut data = fixtures::TIME_DATA_512.to_vec();
+    fft::real::forward(&mut data);
+    let data = fft::real::unpack(&data);
+    assert::close(as_f64(&data), &fixtures::FREQUENCY_DATA_512_REAL_UNPACKED[..], 1e-12);
+}
+
+#[test]
+fn real_inverse_256() {
+    let mut data = fixtures::FREQUENCY_DATA_256_REAL_PACKED.to_vec();
     fft::real::inverse(&mut data);
-    assert::close(&data, &fixtures::TIME_DATA[..], 1e-14);
+    assert::close(&data, &fixtures::TIME_DATA_256[..], 1e-14);
+}
+
+#[test]
+fn real_inverse_512() {
+    let mut data = fixtures::TIME_DATA_512.to_vec();
+    fft::real::forward(&mut data);
+    fft::real::inverse(&mut data);
+    assert::close(&data, &fixtures::TIME_DATA_512[..], 1e-14);
 }
 
 fn as_f64<'l>(slice: &'l [c64]) -> &'l [f64] {
