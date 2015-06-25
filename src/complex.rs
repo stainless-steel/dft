@@ -9,8 +9,7 @@ use number::c64;
 ///
 /// The number of points should be a power of two.
 pub fn forward(data: &mut [c64]) {
-    let n = data.len();
-    power_of_two!(n);
+    let n = power_of_two!(data);
     rearrange(data, n);
     perform(data, n, false);
 }
@@ -19,8 +18,7 @@ pub fn forward(data: &mut [c64]) {
 ///
 /// The number of points should be a power of two.
 pub fn inverse(data: &mut [c64], scaling: bool) {
-    let n = data.len();
-    power_of_two!(n);
+    let n = power_of_two!(data);
     rearrange(data, n);
     perform(data, n, true);
     if scaling {
@@ -46,12 +44,12 @@ fn rearrange(data: &mut [c64], n: usize) {
 fn perform(data: &mut [c64], n: usize, inverse: bool) {
     use std::f64::consts::PI;
 
-    let pi = if inverse { PI } else { -PI };
+    let sign = if inverse { 1.0 } else { -1.0 };
     let mut step = 1;
     while step < n {
         let jump = step << 1;
         let (multiplier, mut factor) = {
-            let delta = pi / step as f64;
+            let delta = sign * PI / step as f64;
             let sine = (0.5 * delta).sin();
             (c64(-2.0 * sine * sine, delta.sin()), c64(1.0, 0.0))
         };

@@ -36,6 +36,13 @@ fn real_forward() {
     }
 }
 
+#[test]
+fn real_inverse() {
+    let mut data = fixtures::FREQUENCY_DATA_FOR_REAL.to_vec();
+    fft::real::inverse(&mut data, true);
+    assert::close(&data, &fixtures::TIME_DATA[..], 1e-14);
+}
+
 fn as_f64<'l>(slice: &'l [c64]) -> &'l [f64] {
     unsafe {
         std::slice::from_raw_parts(slice.as_ptr() as *const _, 2 * slice.len())
