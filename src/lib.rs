@@ -1,8 +1,6 @@
-//! [Algorithm][1] to compute the [discrete Fourier transform][2] and its
-//! inverse.
+//! [Fast Fourier transform][1] algorithm.
 //!
 //! [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
-//! [2]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
 extern crate complex as number;
 

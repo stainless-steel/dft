@@ -6,9 +6,7 @@ license = "MIT"
 repository = "https://github.com/stainless-steel/fft"
 homepage = "https://github.com/stainless-steel/fft"
 documentation = "https://stainless-steel.github.io/fft"
-description = """
-The package provides an algorithm to compute the discrete Fourier transform and
-its inverse."""
+description = "The package provides a fast Fourier transform algorithm."
 
 [dependencies]
 complex = "*"
