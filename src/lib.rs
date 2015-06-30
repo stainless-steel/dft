@@ -1,6 +1,6 @@
-//! [Fast Fourier transform][1] algorithm.
+//! [Discrete Fourier transform][1].
 //!
-//! [1]: https://en.wikipedia.org/wiki/Fast_Fourier_transform
+//! [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
 extern crate complex as number;
 

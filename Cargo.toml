@@ -1,12 +1,13 @@
 [package]
-name = "fft"
+name = "dft"
 version = "0.2.0"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/stainless-steel/fft"
-homepage = "https://github.com/stainless-steel/fft"
-documentation = "https://stainless-steel.github.io/fft"
-description = "The package provides a fast Fourier transform algorithm."
+repository = "https://github.com/stainless-steel/dft"
+homepage = "https://github.com/stainless-steel/dft"
+documentation = "https://stainless-steel.github.io/dft"
+description = """
+The package provides an algorithm to compute the discrete Fourier transform."""
 
 [dependencies]
 complex = "*"

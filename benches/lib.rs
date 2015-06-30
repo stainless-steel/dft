@@ -1,7 +1,7 @@
 #![feature(test)]
 
 extern crate complex;
-extern crate fft;
+extern crate dft;
 extern crate test;
 
 use complex::c64;
@@ -23,10 +23,10 @@ use test::{Bencher, black_box};
 
 fn complex_forward(size: usize, bencher: &mut Bencher) {
     let mut data = vec![c64(42.0, 69.0); size];
-    bencher.iter(|| black_box(fft::complex::forward(&mut data)));
+    bencher.iter(|| black_box(dft::complex::forward(&mut data)));
 }
 
 fn real_forward(size: usize, bencher: &mut Bencher) {
     let mut data = vec![42.0; 2 * size];
-    bencher.iter(|| black_box(fft::real::forward(&mut data)));
+    bencher.iter(|| black_box(dft::real::forward(&mut data)));
 }
