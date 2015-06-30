@@ -1,7 +1,7 @@
 # DFT [![Version][version-img]][version-url] [![Status][status-img]][status-url]
 
 The package provides an algorithm to compute the [discrete Fourier
-transform][2].
+transform][1].
 
 ## [Documentation][doc]
 
