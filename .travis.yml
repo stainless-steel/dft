@@ -1,12 +1,27 @@
 language: rust
 sudo: false
+rust:
+  - stable
+  - beta
+  - nightly
+
+script:
+  - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+      cargo bench;
+      cargo build;
+      cargo test;
+    else
+      cargo build;
+      cargo test;
+    fi
 
 after_success:
   - curl https://stainless-steel.github.io/travis/after_success.sh | bash
 
 env:
   global:
-    secure: iwJM3WKH92yxKSdRkab/R8nO3BRzxyxK3QvyPBH2gEUhd1/ZTjLQcWbpF9Gv0Kpkbm1hNAAPTNN787qNFv8qJ/Ebr+VTkxpAQrh1wX37fMF1gqWdaSeZQM0xeCzptoOrIz/FgbBcTV7ndx+Fc4g0dwtfBPZf2/blwg4F9CjqbYpnc5M3iNN9GuLwBU3FCM4nr5OyqZji+EweoxAN3bk17lmlCoTlggap2MY5MHGo+vslMvlAvd7vj1dNCo8ytQC4VyfUriXSQKmKSFl7WHsEQm6hIWvMLVDx6zyUvYfZfYqtmuthiAAj56tVpXCzNoI/v2bjMDlAajoQsn3arTEmL21CugsEsc6nvmEpbuziw9WPLBKdgBALepbHDncLLo4vLXexJOwZgZKoAK/DqboFjW9nevxbJh6Qz0LyRMKdSNUgxe90i/yNxcQaEJHoonB5QjAgTfzMmHCm+4tAiwp8S6sqg8GNKIaTo7Tt40mxFycXIC73YnIe5whLDbrcyJIozntL03B+VeMZMCKNfl+Q63O3NCnxSpog6rQSNYNXazUk2CzT7PonQ72j0b8WFpl1kBtuG4zctN2+t7toi0rJnd7vPfUMs0G2p4LRZ5VESoqOrFHKwEtSS7xIKUuscfCPNUcVvb9aWoAJNTdw/ouLARVQMOk/jscf6SU50zuszhU=
+    - RUSTDOC_VERSION=nightly
+    - secure: n0wYyA0rTr0ScX40ehFxX9A+rL4n33QcdCXAy/1Qj0giFGXP0HHc0dwO0YFoj8nU8HdG1omDz+48uYZI1Od7dlQm1HkXL53OCJDan0SUfsYM5jv1Dl20aUucUeDT/EbolNRqTbaXAxQYiNlaqioWL6KqQAwjOgwV0r9U7o4T+xThjhd/YS6lUZHT/7pl2If7mtHw+5IKY9Vl5xYLBKPDMVCraeEXTFCJosBFpIZKuKrWFrywmEsK/cxnCHXPvzYAQry/lwNsEB3RQBBySGbyLNdhEx3aadl39v8mDZ7+vzGuSaKdYsUf18TkzlmtPHvfOvDigits8YYxnXTc3ouH4XJI+RrMTMhVBxQM2AN48jPgIVWYLjH1Db+N7ZKoIdlyk2VHzg4VKUConZt0JMmux802nid4zLBCLzVxnLhvhziVaSQ2BG81gwWtDtvGF8tuBmcUFjLcH/5s8ipy1lYkoV1WGpiikKrQMLJnx7y54FYiadE2TlwT4XsWD0tOgTDr+m+Reyb0n/91chG3m0RV9eu0ylT34LqMvJ7wPzySKmzt0fUTJUWDUHDXyhYhFXJhglnAnJdpUNXRgpf85fpAwi2cxD9VQrLnQmyldUl+RFeG8a2oQiynd5nksOqj5+wJienB2sk5W0MfCo397ZIVG41udz/UKuabOqfZneSMRaY=
 
 notifications:
   email: false
