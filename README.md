@@ -13,7 +13,7 @@ transform][1].
 
 [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-[version-img]: http://stainless-steel.github.io/images/crates.svg
+[version-img]: https://img.shields.io/crates/v/dft.svg
 [version-url]: https://crates.io/crates/dft
 [status-img]: https://travis-ci.org/stainless-steel/dft.svg?branch=master
 [status-url]: https://travis-ci.org/stainless-steel/dft
