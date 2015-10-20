@@ -1,6 +1,6 @@
 [package]
 name = "dft"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/stainless-steel/dft"
@@ -10,7 +10,7 @@ description = """
 The package provides an algorithm to compute the discrete Fourier transform."""
 
 [dependencies]
-complex = "*"
+complex = "0.7"
 
 [dev-dependencies]
-assert = "*"
+assert = "0.6"
