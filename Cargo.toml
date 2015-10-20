@@ -9,8 +9,10 @@ documentation = "https://stainless-steel.github.io/dft"
 description = """
 The package provides an algorithm to compute the discrete Fourier transform."""
 
-[dependencies]
-complex = "0.7"
+[dependencies.num]
+version = "0.1"
+features = ["complex"]
+default-features = false
 
 [dev-dependencies]
 assert = "0.6"

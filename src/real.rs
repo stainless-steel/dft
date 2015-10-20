@@ -1,6 +1,6 @@
 //! Transformation of real data.
 
-use number::{Complex, c64};
+use c64;
 
 macro_rules! reinterpret(
     ($data:ident) => (unsafe {
@@ -55,11 +55,11 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
     let mut cdata = Vec::with_capacity(n);
     unsafe { cdata.set_len(n) };
 
-    cdata[0] = c64(data[0], 0.0);
+    cdata[0] = c64!(data[0], 0.0);
     for i in 1..(n / 2) {
-        cdata[i] = c64(data[2 * i], data[2 * i + 1]);
+        cdata[i] = c64!(data[2 * i], data[2 * i + 1]);
     }
-    cdata[n / 2] = c64(data[1], 0.0);
+    cdata[n / 2] = c64!(data[1], 0.0);
     for i in (n / 2 + 1)..n {
         cdata[i] = cdata[n - i].conj();
     }
@@ -68,9 +68,9 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
 }
 
 fn compose(data: &mut [c64], n: usize, inverse: bool) {
-    data[0] = c64(data[0].re() + data[0].im(), data[0].re() - data[0].im());
+    data[0] = c64!(data[0].re + data[0].im, data[0].re - data[0].im);
     if inverse {
-        data[0] = data[0] * 0.5;
+        data[0] = data[0].scale(0.5);
     }
 
     let sign = if inverse { 1.0 } else { -1.0 };
@@ -78,14 +78,14 @@ fn compose(data: &mut [c64], n: usize, inverse: bool) {
         use std::f64::consts::PI;
         let theta = sign * PI / n as f64;
         let sine = (0.5 * theta).sin();
-        (c64(-2.0 * sine * sine, theta.sin()), c64(1.0, 0.0))
+        (c64!(-2.0 * sine * sine, theta.sin()), c64!(1.0, 0.0))
     };
     for i in 1..(n / 2) {
         let j = n - i;
         factor = multiplier * factor + factor;
-        let part1 = (data[i] + data[j].conj()) * 0.5;
-        let part2 = (data[i] - data[j].conj()) * 0.5;
-        let product = c64(0.0, sign) * factor * part2;
+        let part1 = (data[i] + data[j].conj()).scale(0.5);
+        let part2 = (data[i] - data[j].conj()).scale(0.5);
+        let product = c64!(0.0, sign) * factor * part2;
         data[i] = part1 + product;
         data[j] = (part1 - product).conj();
     }
@@ -95,19 +95,17 @@ fn compose(data: &mut [c64], n: usize, inverse: bool) {
 
 #[cfg(test)]
 mod tests {
-    use number::c64;
-
     #[test]
     fn unpack() {
         let data = (0..4).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            c64(1.0, 0.0), c64(3.0, 4.0), c64(2.0, 0.0), c64(3.0, -4.0),
+            c64!(1.0, 0.0), c64!(3.0, 4.0), c64!(2.0, 0.0), c64!(3.0, -4.0),
         ]);
 
         let data = (0..8).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            c64(1.0, 0.0), c64(3.0, 4.0), c64(5.0, 6.0), c64(7.0, 8.0),
-            c64(2.0, 0.0), c64(7.0, -8.0), c64(5.0, -6.0), c64(3.0, -4.0),
+            c64!(1.0, 0.0), c64!(3.0, 4.0), c64!(5.0, 6.0), c64!(7.0, 8.0),
+            c64!(2.0, 0.0), c64!(7.0, -8.0), c64!(5.0, -6.0), c64!(3.0, -4.0),
         ]);
     }
 }

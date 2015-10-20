@@ -3,7 +3,7 @@
 // The implementation is based on:
 // http://www.librow.com/articles/article-10
 
-use number::c64;
+use c64;
 
 /// Perform the forward transform.
 ///
@@ -57,7 +57,7 @@ fn transform(data: &mut [c64], n: usize, inverse: bool) {
             use std::f64::consts::PI;
             let theta = sign * PI / step as f64;
             let sine = (0.5 * theta).sin();
-            (c64(-2.0 * sine * sine, theta.sin()), c64(1.0, 0.0))
+            (c64!(-2.0 * sine * sine, theta.sin()), c64!(1.0, 0.0))
         };
         for mut i in 0..step {
             while i < n {
@@ -76,6 +76,6 @@ fn transform(data: &mut [c64], n: usize, inverse: bool) {
 fn scale(data: &mut [c64], n: usize) {
     let factor = 1.0 / n as f64;
     for i in 0..n {
-        data[i] = data[i] * factor;
+        data[i] = data[i].scale(factor);
     }
 }

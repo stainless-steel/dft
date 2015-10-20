@@ -1,8 +1,7 @@
 extern crate assert;
-extern crate complex;
 extern crate dft;
 
-use complex::c64;
+use dft::c64;
 
 mod fixtures;
 
@@ -72,5 +71,5 @@ fn as_c64_mut<'l>(slice: &'l mut [f64]) -> &'l mut [c64] {
 }
 
 fn to_c64(slice: &[f64]) -> Vec<c64> {
-    slice.iter().map(|&re| c64(re, 0.0)).collect()
+    slice.iter().map(|&re| c64::new(re, 0.0)).collect()
 }
