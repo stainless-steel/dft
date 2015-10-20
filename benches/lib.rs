@@ -1,10 +1,9 @@
 #![feature(test)]
 
-extern crate complex;
 extern crate dft;
 extern crate test;
 
-use complex::c64;
+use dft::c64;
 use test::{Bencher, black_box};
 
 #[bench] fn complex_forward_0004(bencher: &mut Bencher) { complex_forward(   4, bencher); }
@@ -22,7 +21,7 @@ use test::{Bencher, black_box};
 #[bench] fn real_forward_4096(bencher: &mut Bencher) { real_forward(4096, bencher); }
 
 fn complex_forward(size: usize, bencher: &mut Bencher) {
-    let mut data = vec![c64(42.0, 69.0); size];
+    let mut data = vec![c64::new(42.0, 69.0); size];
     bencher.iter(|| black_box(dft::complex::forward(&mut data)));
 }
 
