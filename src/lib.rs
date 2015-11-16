@@ -40,7 +40,6 @@ impl Plan {
         use std::f64::consts::PI;
 
         assert!(size.is_power_of_two(), "the number of points should be a power of two");
-
         let mut factors = vec![];
         let sign = if let Operation::Forward = operation { -1.0 } else { 1.0 };
         let mut step = 1;
@@ -56,7 +55,6 @@ impl Plan {
             }
             step <<= 1;
         }
-
         Plan { size: size, factors: factors, operation: operation }
     }
 }

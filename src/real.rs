@@ -23,9 +23,7 @@ pub fn transform(data: &mut [f64], plan: &Plan) {
 
     let n = data.len();
     assert!(n == plan.size, "the plan is not appropriate for the dataset");
-
     let data = unsafe { from_raw_parts_mut(data.as_mut_ptr() as *mut _, n / 2) };
-
     match plan.operation {
         Operation::Forward => {
             complex::transform(data, plan);
@@ -34,7 +32,7 @@ pub fn transform(data: &mut [f64], plan: &Plan) {
         Operation::Backward | Operation::Inverse => {
             compose(data, n / 2, &plan.factors, true);
             complex::transform(data, plan);
-        }
+        },
     }
 }
 
@@ -43,10 +41,8 @@ pub fn transform(data: &mut [f64], plan: &Plan) {
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
     assert!(n.is_power_of_two(), "the number of points should be a power of two");
-
     let mut cdata = Vec::with_capacity(n);
     unsafe { cdata.set_len(n) };
-
     cdata[0] = c64!(data[0], 0.0);
     for i in 1..(n / 2) {
         cdata[i] = c64!(data[2 * i], data[2 * i + 1]);
@@ -55,7 +51,6 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
     for i in (n / 2 + 1)..n {
         cdata[i] = cdata[n - i].conj();
     }
-
     cdata
 }
 
@@ -64,18 +59,16 @@ fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
     if inverse {
         data[0] = data[0].scale(0.5);
     }
-
     let m = factors.len();
     let sign = if inverse { 1.0 } else { -1.0 };
     for i in 1..(n / 2) {
         let j = n - i;
-        let part1 = (data[i] + data[j].conj()).scale(0.5);
-        let part2 = (data[i] - data[j].conj()).scale(0.5);
+        let part1 = data[i] + data[j].conj();
+        let part2 = data[i] - data[j].conj();
         let product = c64!(0.0, sign) * factors[m - j] * part2;
-        data[i] = part1 + product;
-        data[j] = (part1 - product).conj();
+        data[i] = (part1 + product).scale(0.5);
+        data[j] = (part1 - product).scale(0.5).conj();
     }
-
     data[n / 2] = data[n / 2].conj();
 }
 

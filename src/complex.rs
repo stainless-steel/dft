@@ -9,7 +9,6 @@ use {Operation, Plan, c64};
 pub fn transform(data: &mut [c64], plan: &Plan) {
     let n = data.len();
     assert!(n <= plan.size, "the plan is not appropriate for the dataset");
-
     rearrange(data, n);
     calculate(data, n, &plan.factors);
     if let Operation::Inverse = plan.operation {
