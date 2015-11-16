@@ -4,8 +4,6 @@ use {Operation, Plan, c64, complex};
 
 /// Perform the transform.
 ///
-/// The number of points should be a power of two.
-///
 /// If the operation is `Operation::Forward`, the function proceeds as follows.
 /// The data are replaced by the positive frequency half of their complex
 /// Fourier transform. The real-valued first and last components of the complex
@@ -54,6 +52,7 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
     cdata
 }
 
+#[inline(always)]
 fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
     data[0] = c64!(data[0].re + data[0].im, data[0].re - data[0].im);
     if inverse {

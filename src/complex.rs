@@ -16,7 +16,7 @@ pub fn transform(data: &mut [c64], plan: &Plan) {
     }
 }
 
-#[inline]
+#[inline(always)]
 fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
     let mut k = 0;
     let mut step = 1;
@@ -36,7 +36,7 @@ fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
     }
 }
 
-#[inline]
+#[inline(always)]
 fn rearrange(data: &mut [c64], n: usize) {
     let mut j = 0;
     for i in 0..n {
@@ -52,7 +52,7 @@ fn rearrange(data: &mut [c64], n: usize) {
     }
 }
 
-#[inline]
+#[inline(always)]
 fn scale(data: &mut [c64], n: usize) {
     let factor = 1.0 / n as f64;
     for i in 0..n {
