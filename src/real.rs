@@ -1,41 +1,41 @@
-//! Transformation of real data.
+use {Operation, Plan, Transform, c64};
 
-use {Operation, Plan, c64, complex};
+impl Transform for [f64] {
+    /// Perform the transform.
+    ///
+    /// If the operation is `Operation::Forward`, the function proceeds as follows.
+    /// The data are replaced by the positive frequency half of their complex
+    /// Fourier transform. The real-valued first and last components of the complex
+    /// transform are returned as elements `data[0]` and `data[1]`, respectively.
+    /// If the operation is `Operation::Backward` or `Operation::Inverse`, the
+    /// function assumes the data are packed as it has just been described.
+    ///
+    /// ## References
+    ///
+    /// 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P.
+    ///    Flannery, “Numerical Recipes 3rd Edition: The Art of Scientific
+    ///    Computing,” Cambridge University Press, 2007.
+    fn transform(&mut self, plan: &Plan) {
+        use std::slice::from_raw_parts_mut;
 
-/// Perform the transform.
-///
-/// If the operation is `Operation::Forward`, the function proceeds as follows.
-/// The data are replaced by the positive frequency half of their complex
-/// Fourier transform. The real-valued first and last components of the complex
-/// transform are returned as elements `data[0]` and `data[1]`, respectively.
-/// If the operation is `Operation::Backward` or `Operation::Inverse`, the
-/// function assumes the data are packed as it has just been described.
-///
-/// ## References
-///
-/// 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P.
-///    Flannery, “Numerical Recipes 3rd Edition: The Art of Scientific
-///    Computing,” Cambridge University Press, 2007.
-pub fn transform(data: &mut [f64], plan: &Plan) {
-    use std::slice::from_raw_parts_mut;
-
-    let n = data.len();
-    assert!(n == plan.size, "the plan is not appropriate for the dataset");
-    let data = unsafe { from_raw_parts_mut(data.as_mut_ptr() as *mut _, n / 2) };
-    match plan.operation {
-        Operation::Forward => {
-            complex::transform(data, plan);
-            compose(data, n / 2, &plan.factors, false);
-        },
-        Operation::Backward | Operation::Inverse => {
-            compose(data, n / 2, &plan.factors, true);
-            complex::transform(data, plan);
-        },
+        let n = self.len();
+        assert!(n == plan.size, "the plan is not appropriate for the dataset");
+        let data = unsafe { from_raw_parts_mut(self.as_mut_ptr() as *mut c64, n / 2) };
+        match plan.operation {
+            Operation::Forward => {
+                data.transform(plan);
+                compose(data, n / 2, &plan.factors, false);
+            },
+            Operation::Backward | Operation::Inverse => {
+                compose(data, n / 2, &plan.factors, true);
+                data.transform(plan);
+            },
+        }
     }
 }
 
-/// Unpack a compressed representation produced by `real::transform` with
-/// `Operation::Forward`.
+/// Unpack a compressed representation produced by `Transform::transform` with
+/// `Operation::Forward` applied to real data.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
     assert!(n.is_power_of_two(), "the number of points should be a power of two");

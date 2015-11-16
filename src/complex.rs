@@ -1,18 +1,17 @@
-//! Transformation of complex data.
-
 // The implementation is based on:
 // http://www.librow.com/articles/article-10
 
-use {Operation, Plan, c64};
+use {Operation, Plan, Transform, c64};
 
-/// Perform the transform.
-pub fn transform(data: &mut [c64], plan: &Plan) {
-    let n = data.len();
-    assert!(n <= plan.size, "the plan is not appropriate for the dataset");
-    rearrange(data, n);
-    calculate(data, n, &plan.factors);
-    if let Operation::Inverse = plan.operation {
-        scale(data, n);
+impl Transform for [c64] {
+    fn transform(&mut self, plan: &Plan) {
+        let n = self.len();
+        assert!(n <= plan.size, "the plan is not appropriate for the dataset");
+        rearrange(self, n);
+        calculate(self, n, &plan.factors);
+        if let Operation::Inverse = plan.operation {
+            scale(self, n);
+        }
     }
 }
 

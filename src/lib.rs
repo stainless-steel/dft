@@ -8,7 +8,14 @@ extern crate num;
 #[allow(non_camel_case_types)]
 pub type c64 = num::Complex<f64>;
 
-/// A plan.
+macro_rules! c64(($re:expr, $im:expr) => (::c64::new($re, $im)));
+
+mod complex;
+mod real;
+
+pub use real::unpack;
+
+/// A transformation plan.
 #[derive(Clone, Debug)]
 pub struct Plan {
     size: usize,
@@ -16,7 +23,7 @@ pub struct Plan {
     operation: Operation,
 }
 
-/// An operation.
+/// A transformation operation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Operation {
     /// The forward transform.
@@ -27,10 +34,11 @@ pub enum Operation {
     Inverse,
 }
 
-macro_rules! c64(($re:expr, $im:expr) => (::c64::new($re, $im)));
-
-pub mod complex;
-pub mod real;
+/// A type suitable for transformation.
+pub trait Transform {
+    /// Perform the transform.
+    fn transform(&mut self, &Plan);
+}
 
 impl Plan {
     /// Create a plan for a specific operation and number of points.
