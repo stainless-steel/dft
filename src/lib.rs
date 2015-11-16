@@ -15,14 +15,6 @@ mod real;
 
 pub use real::unpack;
 
-/// A transformation plan.
-#[derive(Clone, Debug)]
-pub struct Plan {
-    size: usize,
-    factors: Vec<c64>,
-    operation: Operation,
-}
-
 /// A transformation operation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Operation {
@@ -32,6 +24,14 @@ pub enum Operation {
     Backward,
     /// The inverse transform.
     Inverse,
+}
+
+/// A transformation plan.
+#[derive(Clone, Debug)]
+pub struct Plan {
+    size: usize,
+    factors: Vec<c64>,
+    operation: Operation,
 }
 
 /// A type suitable for transformation.
