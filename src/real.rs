@@ -1,20 +1,6 @@
 use {Operation, Plan, Transform, c64};
 
 impl Transform for [f64] {
-    /// Perform the transform.
-    ///
-    /// If the operation is `Operation::Forward`, the function proceeds as follows.
-    /// The data are replaced by the positive frequency half of their complex
-    /// Fourier transform. The real-valued first and last components of the complex
-    /// transform are returned as elements `data[0]` and `data[1]`, respectively.
-    /// If the operation is `Operation::Backward` or `Operation::Inverse`, the
-    /// function assumes the data are packed as it has just been described.
-    ///
-    /// ## References
-    ///
-    /// 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P.
-    ///    Flannery, “Numerical Recipes 3rd Edition: The Art of Scientific
-    ///    Computing,” Cambridge University Press, 2007.
     fn transform(&mut self, plan: &Plan) {
         use std::slice::from_raw_parts_mut;
 
@@ -35,7 +21,8 @@ impl Transform for [f64] {
 }
 
 /// Unpack a compressed representation produced by `Transform::transform` with
-/// `Operation::Forward` applied to real data.
+/// `Operation::Forward` when applied to real data. See the top-level
+/// description of the crate.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
     assert!(n.is_power_of_two(), "the number of points should be a power of two");

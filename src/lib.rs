@@ -1,5 +1,26 @@
 //! [Discrete Fourier transform][1].
 //!
+//! The `Transform` trait is responsible for performing the transform. The trait
+//! is implemented for real and complex data, which are represented by `[f64]`
+//! and `[c64]`, respectively. There are three transformation operations
+//! available: forward, backward, and inverse. The desired operation is
+//! specified by the `Operation` enumeration passed to the `Plan::new` function,
+//! which precomputes auxiliary information needed for `Transform::transform`.
+//!
+//! When applied to real data, `Transform::transform` works as follows. If the
+//! operation is `Operation::Forward`, the data are replaced by the positive
+//! frequency half of their complex Fourier transform. The real-valued first and
+//! last components of the complex transform are returned as elements `self[0]`
+//! and `self[1]`, respectively. If the operation is `Operation::Backward` or
+//! `Operation::Inverse`, the function assumes that the data are packed in the
+//! format that has just been described. See the reference below for further
+//! information on the format.
+//!
+//! ## References
+//!
+//! 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery, “Numerical
+//!    Recipes 3rd Edition: The Art of Scientific Computing,” Cambridge University Press, 2007.
+//!
 //! [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
 extern crate num;
