@@ -1,6 +1,6 @@
 //! Transformation of real data.
 
-use c64;
+use {Operation, Plan, c64, complex};
 
 macro_rules! reinterpret(
     ($data:ident) => (unsafe {
@@ -10,45 +10,38 @@ macro_rules! reinterpret(
     });
 );
 
-/// Perform the forward transform.
+/// Perform the transform.
 ///
-/// The number of points should be a power of two. The data are replaced by the
-/// positive frequency half of their complex Fourier transform. The real-valued
-/// first and last components of the complex transform are returned as elements
-/// `data[0]` and `data[1]`, respectively.
+/// The number of points should be a power of two.
+///
+/// If the operation is `Operation::Forward`, the function proceeds as follows.
+/// The data are replaced by the positive frequency half of their complex
+/// Fourier transform. The real-valued first and last components of the complex
+/// transform are returned as elements `data[0]` and `data[1]`, respectively.
+/// If the operation is `Operation::Backward` or `Operation::Inverse`, the
+/// function assumes the data are packed as it has just been described.
 ///
 /// ## References
 ///
 /// 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P.
 ///    Flannery, “Numerical Recipes 3rd Edition: The Art of Scientific
 ///    Computing,” Cambridge University Press, 2007.
-pub fn forward(data: &mut [f64]) {
+pub fn transform(data: &mut [f64], plan: &Plan) {
     let (data, n) = reinterpret!(data);
-    ::complex::forward(data);
-    compose(data, n, false);
+    match plan.operation {
+        Operation::Forward => {
+            complex::transform(data, plan);
+            compose(data, n, &plan.factors, false);
+        },
+        Operation::Backward | Operation::Inverse => {
+            compose(data, n, &plan.factors, true);
+            complex::transform(data, plan);
+        }
+    }
 }
 
-/// Perform the backward transform.
-///
-/// The number of points should be a power of two. The data should be packed as
-/// described in `real::forward`.
-pub fn backward(data: &mut [f64]) {
-    let (data, n) = reinterpret!(data);
-    compose(data, n, true);
-    ::complex::backward(data);
-}
-
-/// Perform the inverse transform.
-///
-/// The number of points should be a power of two. The data should be packed as
-/// described in `real::forward`.
-pub fn inverse(data: &mut [f64]) {
-    let (data, n) = reinterpret!(data);
-    compose(data, n, true);
-    ::complex::inverse(data);
-}
-
-/// Unpack a compressed representation produced by `real::forward`.
+/// Unpack a compressed representation produced by `real::transform` with
+/// `Operation::Forward`.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = power_of_two!(data);
 
@@ -67,25 +60,19 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
     cdata
 }
 
-fn compose(data: &mut [c64], n: usize, inverse: bool) {
+fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
     data[0] = c64!(data[0].re + data[0].im, data[0].re - data[0].im);
     if inverse {
         data[0] = data[0].scale(0.5);
     }
 
+    let m = factors.len();
     let sign = if inverse { 1.0 } else { -1.0 };
-    let (multiplier, mut factor) = {
-        use std::f64::consts::PI;
-        let theta = sign * PI / n as f64;
-        let sine = (0.5 * theta).sin();
-        (c64!(-2.0 * sine * sine, theta.sin()), c64!(1.0, 0.0))
-    };
     for i in 1..(n / 2) {
         let j = n - i;
-        factor = multiplier * factor + factor;
         let part1 = (data[i] + data[j].conj()).scale(0.5);
         let part2 = (data[i] - data[j].conj()).scale(0.5);
-        let product = c64!(0.0, sign) * factor * part2;
+        let product = c64!(0.0, sign) * factors[m - j] * part2;
         data[i] = part1 + product;
         data[j] = (part1 - product).conj();
     }

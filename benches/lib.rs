@@ -3,29 +3,31 @@
 extern crate dft;
 extern crate test;
 
-use dft::c64;
+use dft::{Operation, Plan, c64, complex, real};
 use test::{Bencher, black_box};
 
-#[bench] fn complex_forward_0004(bencher: &mut Bencher) { complex_forward(   4, bencher); }
-#[bench] fn complex_forward_0016(bencher: &mut Bencher) { complex_forward(  16, bencher); }
-#[bench] fn complex_forward_0064(bencher: &mut Bencher) { complex_forward(  64, bencher); }
-#[bench] fn complex_forward_0256(bencher: &mut Bencher) { complex_forward( 256, bencher); }
-#[bench] fn complex_forward_1024(bencher: &mut Bencher) { complex_forward(1024, bencher); }
-#[bench] fn complex_forward_4096(bencher: &mut Bencher) { complex_forward(4096, bencher); }
+#[bench] fn complex_transform_0004(bencher: &mut Bencher) { complex_transform(   4, bencher); }
+#[bench] fn complex_transform_0016(bencher: &mut Bencher) { complex_transform(  16, bencher); }
+#[bench] fn complex_transform_0064(bencher: &mut Bencher) { complex_transform(  64, bencher); }
+#[bench] fn complex_transform_0256(bencher: &mut Bencher) { complex_transform( 256, bencher); }
+#[bench] fn complex_transform_1024(bencher: &mut Bencher) { complex_transform(1024, bencher); }
+#[bench] fn complex_transform_4096(bencher: &mut Bencher) { complex_transform(4096, bencher); }
 
-#[bench] fn real_forward_0004(bencher: &mut Bencher) { real_forward(   4, bencher); }
-#[bench] fn real_forward_0016(bencher: &mut Bencher) { real_forward(  16, bencher); }
-#[bench] fn real_forward_0064(bencher: &mut Bencher) { real_forward(  64, bencher); }
-#[bench] fn real_forward_0256(bencher: &mut Bencher) { real_forward( 256, bencher); }
-#[bench] fn real_forward_1024(bencher: &mut Bencher) { real_forward(1024, bencher); }
-#[bench] fn real_forward_4096(bencher: &mut Bencher) { real_forward(4096, bencher); }
+#[bench] fn real_transform_0004(bencher: &mut Bencher) { real_transform(   4, bencher); }
+#[bench] fn real_transform_0016(bencher: &mut Bencher) { real_transform(  16, bencher); }
+#[bench] fn real_transform_0064(bencher: &mut Bencher) { real_transform(  64, bencher); }
+#[bench] fn real_transform_0256(bencher: &mut Bencher) { real_transform( 256, bencher); }
+#[bench] fn real_transform_1024(bencher: &mut Bencher) { real_transform(1024, bencher); }
+#[bench] fn real_transform_4096(bencher: &mut Bencher) { real_transform(4096, bencher); }
 
-fn complex_forward(size: usize, bencher: &mut Bencher) {
+fn complex_transform(size: usize, bencher: &mut Bencher) {
     let mut data = vec![c64::new(42.0, 69.0); size];
-    bencher.iter(|| black_box(dft::complex::forward(&mut data)));
+    let plan = Plan::new(Operation::Forward, size);
+    bencher.iter(|| black_box(complex::transform(&mut data, &plan)));
 }
 
-fn real_forward(size: usize, bencher: &mut Bencher) {
+fn real_transform(size: usize, bencher: &mut Bencher) {
     let mut data = vec![42.0; 2 * size];
-    bencher.iter(|| black_box(dft::real::forward(&mut data)));
+    let plan = Plan::new(Operation::Forward, 2 * size);
+    bencher.iter(|| black_box(real::transform(&mut data, &plan)));
 }

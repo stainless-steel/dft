@@ -3,34 +3,37 @@
 // The implementation is based on:
 // http://www.librow.com/articles/article-10
 
-use c64;
+use {Operation, Plan, c64};
 
-/// Perform the forward transform.
+/// Perform the transform.
 ///
 /// The number of points should be a power of two.
-pub fn forward(data: &mut [c64]) {
+pub fn transform(data: &mut [c64], plan: &Plan) {
     let n = power_of_two!(data);
     rearrange(data, n);
-    transform(data, n, false);
+    calculate(data, n, &plan.factors);
+    if let Operation::Inverse = plan.operation {
+        scale(data, n);
+    }
 }
 
-/// Perform the backward transform.
-///
-/// The number of points should be a power of two.
-pub fn backward(data: &mut [c64]) {
-    let n = power_of_two!(data);
-    rearrange(data, n);
-    transform(data, n, true);
-}
-
-/// Perform the inverse transform.
-///
-/// The number of points should be a power of two.
-pub fn inverse(data: &mut [c64]) {
-    let n = power_of_two!(data);
-    rearrange(data, n);
-    transform(data, n, true);
-    scale(data, n);
+fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
+    let mut k = 0;
+    let mut step = 1;
+    while step < n {
+        let jump = step << 1;
+        for mut i in 0..step {
+            while i < n {
+                let j = i + step;
+                let product = factors[k] * data[j];
+                data[j] = data[i] - product;
+                data[i] = data[i] + product;
+                i += jump;
+            }
+            k += 1;
+        }
+        step <<= 1;
+    }
 }
 
 fn rearrange(data: &mut [c64], n: usize) {
@@ -45,31 +48,6 @@ fn rearrange(data: &mut [c64], n: usize) {
             mask >>= 1;
         }
         j |= mask;
-    }
-}
-
-fn transform(data: &mut [c64], n: usize, inverse: bool) {
-    let sign = if inverse { 1.0 } else { -1.0 };
-    let mut step = 1;
-    while step < n {
-        let jump = step << 1;
-        let (multiplier, mut factor) = {
-            use std::f64::consts::PI;
-            let theta = sign * PI / step as f64;
-            let sine = (0.5 * theta).sin();
-            (c64!(-2.0 * sine * sine, theta.sin()), c64!(1.0, 0.0))
-        };
-        for mut i in 0..step {
-            while i < n {
-                let j = i + step;
-                let product = factor * data[j];
-                data[j] = data[i] - product;
-                data[i] = data[i] + product;
-                i += jump;
-            }
-            factor = multiplier * factor + factor;
-        }
-        step <<= 1;
     }
 }
 
