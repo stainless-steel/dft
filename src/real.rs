@@ -2,14 +2,6 @@
 
 use {Operation, Plan, c64, complex};
 
-macro_rules! reinterpret(
-    ($data:ident) => (unsafe {
-        use std::slice::from_raw_parts_mut;
-        let n = power_of_two!($data);
-        (from_raw_parts_mut($data.as_mut_ptr() as *mut _, n / 2), n / 2)
-    });
-);
-
 /// Perform the transform.
 ///
 /// The number of points should be a power of two.
@@ -27,14 +19,20 @@ macro_rules! reinterpret(
 ///    Flannery, “Numerical Recipes 3rd Edition: The Art of Scientific
 ///    Computing,” Cambridge University Press, 2007.
 pub fn transform(data: &mut [f64], plan: &Plan) {
-    let (data, n) = reinterpret!(data);
+    use std::slice::from_raw_parts_mut;
+
+    let n = data.len();
+    assert!(n == plan.size, "the plan is not appropriate for the dataset");
+
+    let data = unsafe { from_raw_parts_mut(data.as_mut_ptr() as *mut _, n / 2) };
+
     match plan.operation {
         Operation::Forward => {
             complex::transform(data, plan);
-            compose(data, n, &plan.factors, false);
+            compose(data, n / 2, &plan.factors, false);
         },
         Operation::Backward | Operation::Inverse => {
-            compose(data, n, &plan.factors, true);
+            compose(data, n / 2, &plan.factors, true);
             complex::transform(data, plan);
         }
     }
@@ -43,7 +41,8 @@ pub fn transform(data: &mut [f64], plan: &Plan) {
 /// Unpack a compressed representation produced by `real::transform` with
 /// `Operation::Forward`.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
-    let n = power_of_two!(data);
+    let n = data.len();
+    assert!(n.is_power_of_two(), "the number of points should be a power of two");
 
     let mut cdata = Vec::with_capacity(n);
     unsafe { cdata.set_len(n) };

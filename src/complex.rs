@@ -6,10 +6,10 @@
 use {Operation, Plan, c64};
 
 /// Perform the transform.
-///
-/// The number of points should be a power of two.
 pub fn transform(data: &mut [c64], plan: &Plan) {
-    let n = power_of_two!(data);
+    let n = data.len();
+    assert!(n <= plan.size, "the plan is not appropriate for the dataset");
+
     rearrange(data, n);
     calculate(data, n, &plan.factors);
     if let Operation::Inverse = plan.operation {
@@ -17,6 +17,7 @@ pub fn transform(data: &mut [c64], plan: &Plan) {
     }
 }
 
+#[inline]
 fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
     let mut k = 0;
     let mut step = 1;
@@ -36,6 +37,7 @@ fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
     }
 }
 
+#[inline]
 fn rearrange(data: &mut [c64], n: usize) {
     let mut j = 0;
     for i in 0..n {
@@ -51,6 +53,7 @@ fn rearrange(data: &mut [c64], n: usize) {
     }
 }
 
+#[inline]
 fn scale(data: &mut [c64], n: usize) {
     let factor = 1.0 / n as f64;
     for i in 0..n {

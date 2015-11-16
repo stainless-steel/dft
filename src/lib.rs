@@ -11,6 +11,7 @@ pub type c64 = num::Complex<f64>;
 /// A plan.
 #[derive(Clone, Debug)]
 pub struct Plan {
+    size: usize,
     factors: Vec<c64>,
     operation: Operation,
 }
@@ -26,33 +27,25 @@ pub enum Operation {
     Inverse,
 }
 
-macro_rules! c64(
-    ($re:expr, $im:expr) => (::c64::new($re, $im));
-);
-
-macro_rules! power_of_two(
-    ($data:expr) => ({
-        let n = $data.len();
-        if !n.is_power_of_two() {
-            panic!("expected the number of points to be a power of two");
-        }
-        n
-    });
-);
+macro_rules! c64(($re:expr, $im:expr) => (::c64::new($re, $im)));
 
 pub mod complex;
 pub mod real;
 
 impl Plan {
-    /// Create a plan.
-    #[inline]
-    pub fn new(operation: Operation, n: usize) -> Plan {
-        let mut factors = Vec::new();
+    /// Create a plan for a specific operation and number of points.
+    ///
+    /// The number of points should be a power of two.
+    pub fn new(operation: Operation, size: usize) -> Plan {
+        use std::f64::consts::PI;
+
+        assert!(size.is_power_of_two(), "the number of points should be a power of two");
+
+        let mut factors = vec![];
         let sign = if let Operation::Forward = operation { -1.0 } else { 1.0 };
         let mut step = 1;
-        while step < n {
+        while step < size {
             let (multiplier, mut factor) = {
-                use std::f64::consts::PI;
                 let theta = PI / step as f64;
                 let sine = (0.5 * theta).sin();
                 (c64!(-2.0 * sine * sine, sign * theta.sin()), c64!(1.0, 0.0))
@@ -63,6 +56,7 @@ impl Plan {
             }
             step <<= 1;
         }
-        Plan { factors: factors, operation: operation }
+
+        Plan { size: size, factors: factors, operation: operation }
     }
 }

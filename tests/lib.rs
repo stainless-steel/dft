@@ -8,7 +8,7 @@ mod fixtures;
 #[test]
 fn complex_forward_128() {
     let mut data = fixtures::TIME_DATA_256.to_vec();
-    complex::transform(as_c64_mut(&mut data), &Plan::new(Operation::Forward, 256));
+    complex::transform(as_c64_mut(&mut data), &Plan::new(Operation::Forward, 128));
     assert::close(&data, &fixtures::FREQUENCY_DATA_128_COMPLEX[..], 1e-14);
 }
 
