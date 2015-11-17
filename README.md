@@ -5,6 +5,18 @@ transform][1].
 
 ## [Documentation][doc]
 
+## Example
+
+```rust
+use dft::{Operation, Plan, Transform};
+
+let size = 512;
+let mut data = vec![0.0; size];
+let plan = Plan::new(Operation::Forward, size);
+
+data.transform(&plan);
+```
+
 ## Contributing
 
 1. Fork the project.

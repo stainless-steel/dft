@@ -7,6 +7,20 @@
 //! specified by the `Operation` enumeration passed to the `Plan::new` function,
 //! which precomputes auxiliary information needed for `Transform::transform`.
 //!
+//! ## Example
+//!
+//! ```
+//! use dft::{Operation, Plan, Transform};
+//!
+//! let size = 512;
+//! let mut data = vec![0.0; size];
+//! let plan = Plan::new(Operation::Forward, size);
+//!
+//! data.transform(&plan);
+//! ```
+//!
+//! ## Real Data
+//!
 //! When applied to real data, `Transform::transform` works as follows. If the
 //! operation is `Operation::Forward`, the data are replaced by the positive
 //! frequency half of their complex Fourier transform. The real-valued first and
