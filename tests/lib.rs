@@ -58,16 +58,12 @@ fn real_inverse_512() {
     assert::close(&data, &fixtures::TIME_DATA_512[..], 1e-14);
 }
 
-fn as_f64<'l>(slice: &'l [c64]) -> &'l [f64] {
-    unsafe {
-        std::slice::from_raw_parts(slice.as_ptr() as *const _, 2 * slice.len())
-    }
+fn as_f64(slice: &[c64]) -> &[f64] {
+    unsafe { std::slice::from_raw_parts(slice.as_ptr() as *const _, 2 * slice.len()) }
 }
 
-fn as_c64_mut<'l>(slice: &'l mut [f64]) -> &'l mut [c64] {
-    unsafe {
-        std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut _, slice.len() / 2)
-    }
+fn as_c64_mut(slice: &mut [f64]) -> &mut [c64] {
+    unsafe { std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut _, slice.len() / 2) }
 }
 
 fn to_c64(slice: &[f64]) -> Vec<c64> {
