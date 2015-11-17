@@ -8,10 +8,10 @@ transform][1].
 ## Example
 
 ```rust
-use dft::{Operation, Plan, Transform};
+use dft::{Operation, Plan, Transform, c64};
 
 let size = 512;
-let mut data = vec![0.0; size];
+let mut data = vec![c64::new(42.0, 69.0); size];
 let plan = Plan::new(Operation::Forward, size);
 
 data.transform(&plan);
