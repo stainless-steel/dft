@@ -11,8 +11,8 @@ transform][1].
 use dft::{Operation, Plan, Transform, c64};
 
 let size = 512;
-let mut data = vec![c64::new(42.0, 69.0); size];
 let plan = Plan::new(Operation::Forward, size);
+let mut data = vec![c64::new(42.0, 69.0); size];
 
 data.transform(&plan);
 ```
