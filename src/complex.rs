@@ -15,6 +15,13 @@ impl Transform for [c64] {
     }
 }
 
+impl Transform for Vec<c64> {
+    #[inline(always)]
+    fn transform(&mut self, plan: &Plan) {
+        Transform::transform(self as &mut [c64], plan)
+    }
+}
+
 #[inline(always)]
 fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
     let mut k = 0;

@@ -3,7 +3,7 @@
 extern crate dft;
 extern crate test;
 
-use dft::{Operation, Plan, Transform, c64};
+use dft::{Operation, Plan, c64};
 use test::{Bencher, black_box};
 
 #[bench] fn complex_0004(bencher: &mut Bencher) { complex(   4, bencher); }
@@ -25,11 +25,11 @@ use test::{Bencher, black_box};
 fn complex(size: usize, bencher: &mut Bencher) {
     let mut data = vec![c64::new(42.0, 69.0); size];
     let plan = Plan::new(Operation::Forward, size);
-    bencher.iter(|| black_box(data.transform(&plan)));
+    bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }
 
 fn real(size: usize, bencher: &mut Bencher) {
     let mut data = vec![42.0; 2 * size];
     let plan = Plan::new(Operation::Forward, 2 * size);
-    bencher.iter(|| black_box(data.transform(&plan)));
+    bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }

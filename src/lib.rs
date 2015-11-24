@@ -10,13 +10,13 @@
 //! ## Example
 //!
 //! ```
-//! use dft::{Operation, Plan, Transform, c64};
+//! use dft::{Operation, Plan, c64};
 //!
 //! let size = 512;
 //! let plan = Plan::new(Operation::Forward, size);
 //! let mut data = vec![c64::new(42.0, 69.0); size];
 //!
-//! data.transform(&plan);
+//! dft::transform(&mut data, &plan);
 //! ```
 //!
 //! ## Real Data
@@ -100,4 +100,12 @@ impl Plan {
         }
         Plan { size: size, factors: factors, operation: operation }
     }
+}
+
+/// Perform the transform.
+///
+/// The function is the same as `Transform::transform`.
+#[inline(always)]
+pub fn transform<T: Transform + ?Sized>(data: &mut T, plan: &Plan) {
+    Transform::transform(data, plan);
 }

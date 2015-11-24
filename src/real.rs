@@ -20,6 +20,13 @@ impl Transform for [f64] {
     }
 }
 
+impl Transform for Vec<f64> {
+    #[inline(always)]
+    fn transform(&mut self, plan: &Plan) {
+        Transform::transform(self as &mut [f64], plan)
+    }
+}
+
 /// Unpack a compressed representation produced by `Transform::transform` with
 /// `Operation::Forward` when applied to real data. See the top-level
 /// description of the crate.

@@ -14,7 +14,7 @@ let size = 512;
 let plan = Plan::new(Operation::Forward, size);
 let mut data = vec![c64::new(42.0, 69.0); size];
 
-data.transform(&plan);
+dft::transform(&mut data, &plan);
 ```
 
 ## Contributing
