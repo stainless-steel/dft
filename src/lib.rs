@@ -32,8 +32,9 @@
 //!
 //! ## References
 //!
-//! 1. William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery, “Numerical
-//!    Recipes 3rd Edition: The Art of Scientific Computing,” Cambridge University Press, 2007.
+//! 1. W. Press, S. Teukolsky, W. Vetterling, and B. Flannery, “Numerical
+//! Recipes 3rd Edition: The Art of Scientific Computing,” Cambridge University
+//! Press, 2007.
 //!
 //! [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 

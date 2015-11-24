@@ -27,9 +27,11 @@ impl Transform for Vec<f64> {
     }
 }
 
-/// Unpack a compressed representation produced by `Transform::transform` with
-/// `Operation::Forward` when applied to real data. See the top-level
-/// description of the crate.
+/// Unpack the result produced by the forward transform applied to real data.
+///
+/// The function decodes the result of an application of `Transform::transform`
+/// with `Operation::Forward` to `[f64]`. See the top-level description of the
+/// crate for further details.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
     assert!(n.is_power_of_two(), "the number of points should be a power of two");
