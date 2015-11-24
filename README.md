@@ -8,7 +8,7 @@ transform][1].
 ## Example
 
 ```rust
-use dft::{Operation, Plan, Transform, c64};
+use dft::{Operation, Plan, c64};
 
 let size = 512;
 let plan = Plan::new(Operation::Forward, size);
