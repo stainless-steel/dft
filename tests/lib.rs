@@ -27,6 +27,20 @@ fn complex_inverse_128() {
 }
 
 #[test]
+fn real_forward_1() {
+    let mut data = [1.0];
+    dft::transform(&mut data[..], &Plan::new(Operation::Forward, 1));
+    assert::close(&data, &[1.0], 1e-14);
+}
+
+#[test]
+fn real_forward_2() {
+    let mut data = [1.0, 2.0];
+    dft::transform(&mut data[..], &Plan::new(Operation::Forward, 2));
+    assert::close(&data, &[3.0, -1.0], 1e-14);
+}
+
+#[test]
 fn real_forward_256() {
     let mut data = fixtures::TIME_DATA_256.to_vec();
     dft::transform(&mut data, &Plan::new(Operation::Forward, 256));
