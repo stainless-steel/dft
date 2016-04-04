@@ -6,12 +6,10 @@ impl Transform for [f64] {
 
         let n = self.len();
         assert!(n == plan.size, "the plan is not appropriate for the dataset");
-
         let h = n >> 1;
         if h == 0 {
             return;
         }
-
         let data = unsafe { from_raw_parts_mut(self.as_mut_ptr() as *mut c64, h) };
         match plan.operation {
             Operation::Forward => {
