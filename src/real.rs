@@ -6,14 +6,20 @@ impl Transform for [f64] {
 
         let n = self.len();
         assert!(n == plan.size, "the plan is not appropriate for the dataset");
-        let data = unsafe { from_raw_parts_mut(self.as_mut_ptr() as *mut c64, n / 2) };
+
+        let h = n >> 1;
+        if h == 0 {
+            return;
+        }
+
+        let data = unsafe { from_raw_parts_mut(self.as_mut_ptr() as *mut c64, h) };
         match plan.operation {
             Operation::Forward => {
                 data.transform(plan);
-                compose(data, n / 2, &plan.factors, false);
+                compose(data, h, &plan.factors, false);
             },
             Operation::Backward | Operation::Inverse => {
-                compose(data, n / 2, &plan.factors, true);
+                compose(data, h, &plan.factors, true);
                 data.transform(plan);
             },
         }
@@ -34,15 +40,19 @@ impl Transform for Vec<f64> {
 /// crate for further details.
 pub fn unpack(data: &[f64]) -> Vec<c64> {
     let n = data.len();
+    let h = n >> 1;
     assert!(n.is_power_of_two(), "the number of points should be a power of two");
     let mut cdata = Vec::with_capacity(n);
     unsafe { cdata.set_len(n) };
     cdata[0] = c64!(data[0], 0.0);
-    for i in 1..(n / 2) {
+    if h == 0 {
+        return cdata;
+    }
+    for i in 1..h {
         cdata[i] = c64!(data[2 * i], data[2 * i + 1]);
     }
-    cdata[n / 2] = c64!(data[1], 0.0);
-    for i in (n / 2 + 1)..n {
+    cdata[h] = c64!(data[1], 0.0);
+    for i in (h + 1)..n {
         cdata[i] = cdata[n - i].conj();
     }
     cdata
@@ -50,13 +60,14 @@ pub fn unpack(data: &[f64]) -> Vec<c64> {
 
 #[inline(always)]
 fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
+    let h = n >> 1;
     data[0] = c64!(data[0].re + data[0].im, data[0].re - data[0].im);
     if inverse {
         data[0] = data[0].scale(0.5);
     }
     let m = factors.len();
     let sign = if inverse { 1.0 } else { -1.0 };
-    for i in 1..(n / 2) {
+    for i in 1..h {
         let j = n - i;
         let part1 = data[i] + data[j].conj();
         let part2 = data[i] - data[j].conj();
@@ -64,7 +75,7 @@ fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
         data[i] = (part1 + product).scale(0.5);
         data[j] = (part1 - product).scale(0.5).conj();
     }
-    data[n / 2] = data[n / 2].conj();
+    data[h] = data[h].conj();
 }
 
 #[cfg(test)]
