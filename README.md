@@ -17,11 +17,11 @@ let mut data = vec![c64::new(42.0, 69.0); size];
 dft::transform(&mut data, &plan);
 ```
 
-## Contributing
+## Contribution
 
-1. Fork the project.
-2. Implement your idea.
-3. Open a pull request.
+Your contribution is highly appreciated. Do not hesitate to open an issue or a
+pull request. Note that any contribution submitted for inclusion in the project
+will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
