@@ -1,27 +1,26 @@
 language: rust
 sudo: false
+
 rust:
   - stable
   - beta
   - nightly
 
 script:
-  - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+  - cargo build
+  - cargo test
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
       cargo bench;
-      cargo build;
-      cargo test;
-    else
-      cargo build;
-      cargo test;
     fi
 
 after_success:
-  - curl https://stainless-steel.github.io/travis/after_success.sh | bash
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
+      curl https://stainless-steel.github.io/travis/update_documentation.sh | bash;
+    fi
 
 env:
   global:
-    - RUSTDOC_VERSION=nightly
-    - secure: n0wYyA0rTr0ScX40ehFxX9A+rL4n33QcdCXAy/1Qj0giFGXP0HHc0dwO0YFoj8nU8HdG1omDz+48uYZI1Od7dlQm1HkXL53OCJDan0SUfsYM5jv1Dl20aUucUeDT/EbolNRqTbaXAxQYiNlaqioWL6KqQAwjOgwV0r9U7o4T+xThjhd/YS6lUZHT/7pl2If7mtHw+5IKY9Vl5xYLBKPDMVCraeEXTFCJosBFpIZKuKrWFrywmEsK/cxnCHXPvzYAQry/lwNsEB3RQBBySGbyLNdhEx3aadl39v8mDZ7+vzGuSaKdYsUf18TkzlmtPHvfOvDigits8YYxnXTc3ouH4XJI+RrMTMhVBxQM2AN48jPgIVWYLjH1Db+N7ZKoIdlyk2VHzg4VKUConZt0JMmux802nid4zLBCLzVxnLhvhziVaSQ2BG81gwWtDtvGF8tuBmcUFjLcH/5s8ipy1lYkoV1WGpiikKrQMLJnx7y54FYiadE2TlwT4XsWD0tOgTDr+m+Reyb0n/91chG3m0RV9eu0ylT34LqMvJ7wPzySKmzt0fUTJUWDUHDXyhYhFXJhglnAnJdpUNXRgpf85fpAwi2cxD9VQrLnQmyldUl+RFeG8a2oQiynd5nksOqj5+wJienB2sk5W0MfCo397ZIVG41udz/UKuabOqfZneSMRaY=
+    - secure: ZJfdxIAGkalb8UwsvD+1yieRHRt0O6xffwMqrNmBODpNtaOHSwnyRYMeFiKlRK2la8/WbCUm+RgceZ9Gpse+jNsOKK186v/BkEIPONPcbW7N4P4/COZ+EVM6WY36N+OL8u2NszVNe/YN6bD6vbvoONUaqta1CfGGSzvHmqYHZIcg1SJ5avov+FKOI4IvgRwk2wZRT/oxfTfmW6rFo24j6UmLbWoZmvkITmjIbTWffYEEY9xCcIz5+0GKU+JoEiS+JAmiUzGoPfRX5pWfhikzRiG/VGD64D2DI3EFOYbB0ztgyEZlpQSRPhlgsEghanO1grDPVwkcmcxx4UP1AVw3x/QTSDtDpVxK5IgL2hnHOqllq312yQrmnMelVrFu6NhgkKJJE3sXsT9CjiITuvdVEDC+U37d6Abe4CUJ9rZFZT/bx79def24Y+s00Do6dVZhwFSrLl3/c7iLNTxddIudatrWCr1HHcp85tohdLTbmRa1/dqJejvasRLeFIh4s+pAt+fdfZa53Q/oyvkqh2tTRGU8yKdOJ3wZ2k+xUxjhV2gXPY0CSuMCB1QgrNzY78Srt9WS3dmkGW8t1dkR9gZoPKgmKTPXXHJY1gnDnc8VbQXYlLTSvyzAgD3p+oE2pQPoQw9hoijF4M/TN+KU0hM5XGEM9gvIZ6i9d+zAUEtZiL0=
 
 notifications:
   email: false
