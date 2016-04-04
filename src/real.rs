@@ -65,6 +65,9 @@ fn compose(data: &mut [c64], n: usize, factors: &[c64], inverse: bool) {
     if inverse {
         data[0] = data[0].scale(0.5);
     }
+    if h == 0 {
+        return;
+    }
     let m = factors.len();
     let sign = if inverse { 1.0 } else { -1.0 };
     for i in 1..h {
