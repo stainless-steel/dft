@@ -7,16 +7,16 @@ mod fixtures;
 
 #[test]
 fn complex_forward_1() {
-    let mut data = vec![1.0, -2.0];
-    dft::transform(as_c64_mut(&mut data), &Plan::new(Operation::Forward, 1));
-    assert::close(&data, &[1.0, -2.0], 1e-14);
+    let mut data = vec![c64::new(1.0, -2.0)];
+    dft::transform(&mut data, &Plan::new(Operation::Forward, 1));
+    assert_eq!(data, vec![c64::new(1.0, -2.0)]);
 }
 
 #[test]
 fn complex_forward_2() {
-    let mut data = vec![1.0, -2.0, 3.0, -4.0];
-    dft::transform(as_c64_mut(&mut data), &Plan::new(Operation::Forward, 2));
-    assert::close(&data, &[4.0, -6.0, -2.0, 2.0], 1e-14);
+    let mut data = vec![c64::new(1.0, -2.0), c64::new(3.0, -4.0)];
+    dft::transform(&mut data, &Plan::new(Operation::Forward, 2));
+    assert_eq!(data, vec![c64::new(4.0, -6.0), c64::new(-2.0, 2.0)]);
 }
 
 #[test]
