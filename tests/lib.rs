@@ -55,6 +55,15 @@ fn real_forward_2() {
 }
 
 #[test]
+fn real_forward_4() {
+    let mut data = vec![1.0, -2.0, 3.0, -4.0];
+    dft::transform(&mut data, &Plan::new(Operation::Forward, 4));
+    assert_eq!(dft::unpack(&data), vec![
+       c64::new(-2.0, 0.0), c64::new(-2.0, -2.0), c64::new(10.0, 0.0), c64::new(-2.0, 2.0),
+    ]);
+}
+
+#[test]
 fn real_forward_256() {
     let mut data = fixtures::TIME_DATA_256.to_vec();
     dft::transform(&mut data, &Plan::new(Operation::Forward, 256));
