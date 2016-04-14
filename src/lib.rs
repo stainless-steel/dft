@@ -38,7 +38,7 @@
 //!
 //! [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-extern crate num;
+extern crate num_complex as num;
 
 /// A complex number with 64-bit parts.
 #[allow(non_camel_case_types)]
