@@ -13,4 +13,4 @@ version = "0.1"
 default-features = false
 
 [dev-dependencies]
-assert = "0.6"
+assert = "0.7"
