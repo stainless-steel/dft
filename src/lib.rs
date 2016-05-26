@@ -44,7 +44,7 @@ extern crate num_complex as num;
 #[allow(non_camel_case_types)]
 pub type c64 = num::Complex<f64>;
 
-macro_rules! c64(($re:expr, $im:expr) => (::c64::new($re, $im)));
+macro_rules! c(($re:expr, $im:expr) => (::num::Complex::new($re, $im)));
 
 mod complex;
 mod real;
@@ -91,7 +91,7 @@ impl Plan {
             let (multiplier, mut factor) = {
                 let theta = PI / step as f64;
                 let sine = (0.5 * theta).sin();
-                (c64!(-2.0 * sine * sine, sign * theta.sin()), c64!(1.0, 0.0))
+                (c!(-2.0 * sine * sine, sign * theta.sin()), c!(1.0, 0.0))
             };
             for _ in 0..step {
                 factors.push(factor);
