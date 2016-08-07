@@ -87,22 +87,19 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
 
 #[cfg(test)]
 mod tests {
-    use num_complex::Complex;
+    use c64;
 
     #[test]
     fn unpack() {
         let data = (0..4).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            Complex::new(1.0, 0.0), Complex::new(3.0,  4.0),
-            Complex::new(2.0, 0.0), Complex::new(3.0, -4.0),
+            c64::new(1.0, 0.0), c64::new(3.0, 4.0), c64::new(2.0, 0.0), c64::new(3.0, -4.0),
         ]);
 
         let data = (0..8).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            Complex::new(1.0,  0.0), Complex::new(3.0,  4.0),
-            Complex::new(5.0,  6.0), Complex::new(7.0,  8.0),
-            Complex::new(2.0,  0.0), Complex::new(7.0, -8.0),
-            Complex::new(5.0, -6.0), Complex::new(3.0, -4.0),
+            c64::new(1.0, 0.0), c64::new(3.0,  4.0), c64::new(5.0,  6.0), c64::new(7.0,  8.0),
+            c64::new(2.0, 0.0), c64::new(7.0, -8.0), c64::new(5.0, -6.0), c64::new(3.0, -4.0),
         ]);
     }
 }
