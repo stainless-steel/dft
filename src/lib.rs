@@ -47,8 +47,6 @@ pub type c32 = Complex<f32>;
 #[allow(non_camel_case_types)]
 pub type c64 = Complex<f64>;
 
-macro_rules! c(($re:expr, $im:expr) => (::num_complex::Complex::new($re, $im)));
-
 mod complex;
 mod real;
 
@@ -96,7 +94,7 @@ impl<T> Plan<T> where T: Float {
             let (multiplier, mut factor) = {
                 let theta = pi / T::from(step).unwrap();
                 let sine = (theta / two).sin();
-                (c!(-two * sine * sine, sign * theta.sin()), c!(one, zero))
+                (Complex::new(-two * sine * sine, sign * theta.sin()), Complex::new(one, zero))
             };
             for _ in 0..step {
                 factors.push(factor);

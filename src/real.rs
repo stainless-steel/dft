@@ -45,14 +45,14 @@ pub fn unpack<T>(data: &[T]) -> Vec<Complex<T>> where T: Float {
     let h = n >> 1;
     let mut result = Vec::with_capacity(n);
     unsafe { result.set_len(n) };
-    result[0] = c!(data[0], zero);
+    result[0] = Complex::new(data[0], zero);
     if h == 0 {
         return result;
     }
     for i in 1..h {
-        result[i] = c!(data[2 * i], data[2 * i + 1]);
+        result[i] = Complex::new(data[2 * i], data[2 * i + 1]);
     }
-    result[h] = c!(data[1], zero);
+    result[h] = Complex::new(data[1], zero);
     for i in (h + 1)..n {
         result[i] = result[n - i].conj();
     }
@@ -66,7 +66,7 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
     let one = T::one();
     let half = (one + one).recip();
     let h = n >> 1;
-    data[0] = c!(data[0].re + data[0].im, data[0].re - data[0].im);
+    data[0] = Complex::new(data[0].re + data[0].im, data[0].re - data[0].im);
     if inverse {
         data[0] = data[0].scale(half);
     }
@@ -80,7 +80,7 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
         let j = n - i;
         let part1 = data[i] + data[j].conj();
         let part2 = data[i] - data[j].conj();
-        let product = c!(zero, sign) * factors[m - j] * part2;
+        let product = Complex::new(zero, sign) * factors[m - j] * part2;
         data[i] = (part1 + product).scale(half);
         data[j] = (part1 - product).scale(half).conj();
     }
@@ -89,17 +89,22 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
 
 #[cfg(test)]
 mod tests {
+    use num_complex::Complex;
+
     #[test]
     fn unpack() {
         let data = (0..4).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            c!(1.0, 0.0), c!(3.0, 4.0), c!(2.0, 0.0), c!(3.0, -4.0),
+            Complex::new(1.0, 0.0), Complex::new(3.0,  4.0),
+            Complex::new(2.0, 0.0), Complex::new(3.0, -4.0),
         ]);
 
         let data = (0..8).map(|i| (i + 1) as f64).collect::<Vec<_>>();
         assert_eq!(super::unpack(&data), vec![
-            c!(1.0, 0.0), c!(3.0,  4.0), c!(5.0,  6.0), c!(7.0,  8.0),
-            c!(2.0, 0.0), c!(7.0, -8.0), c!(5.0, -6.0), c!(3.0, -4.0),
+            Complex::new(1.0,  0.0), Complex::new(3.0,  4.0),
+            Complex::new(5.0,  6.0), Complex::new(7.0,  8.0),
+            Complex::new(2.0,  0.0), Complex::new(7.0, -8.0),
+            Complex::new(5.0, -6.0), Complex::new(3.0, -4.0),
         ]);
     }
 }
