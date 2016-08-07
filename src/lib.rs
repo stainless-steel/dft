@@ -37,7 +37,7 @@ extern crate num_complex;
 extern crate num_traits;
 
 use num_complex::Complex;
-use num_traits::Float;
+use num_traits::{Float, One};
 
 /// A complex number with 32-bit parts.
 #[allow(non_camel_case_types)]
@@ -83,7 +83,6 @@ impl<T> Plan<T> where T: Float {
     /// The number of points should be a power of two.
     pub fn new(operation: Operation, n: usize) -> Self {
         assert!(n.is_power_of_two());
-        let zero = T::zero();
         let one = T::one();
         let two = one + one;
         let pi = T::acos(-one);
@@ -94,7 +93,7 @@ impl<T> Plan<T> where T: Float {
             let (multiplier, mut factor) = {
                 let theta = pi / T::from(step).unwrap();
                 let sine = (theta / two).sin();
-                (Complex::new(-two * sine * sine, sign * theta.sin()), Complex::new(one, zero))
+                (Complex::new(-two * sine * sine, sign * theta.sin()), Complex::one())
             };
             for _ in 0..step {
                 factors.push(factor);

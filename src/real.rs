@@ -41,18 +41,17 @@ impl<T> Transform<T> for Vec<T> where T: Float {
 pub fn unpack<T>(data: &[T]) -> Vec<Complex<T>> where T: Float {
     let n = data.len();
     assert!(n.is_power_of_two());
-    let zero = T::zero();
     let h = n >> 1;
     let mut result = Vec::with_capacity(n);
     unsafe { result.set_len(n) };
-    result[0] = Complex::new(data[0], zero);
+    result[0] = data[0].into();
     if h == 0 {
         return result;
     }
     for i in 1..h {
         result[i] = Complex::new(data[2 * i], data[2 * i + 1]);
     }
-    result[h] = Complex::new(data[1], zero);
+    result[h] = data[1].into();
     for i in (h + 1)..n {
         result[i] = result[n - i].conj();
     }
@@ -74,13 +73,12 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
         return;
     }
     let m = factors.len();
-    let zero = T::zero();
-    let sign = if inverse { one } else { -one };
+    let sign = if inverse { Complex::i() } else { -Complex::i() };
     for i in 1..h {
         let j = n - i;
         let part1 = data[i] + data[j].conj();
         let part2 = data[i] - data[j].conj();
-        let product = Complex::new(zero, sign) * factors[m - j] * part2;
+        let product = sign * factors[m - j] * part2;
         data[i] = (part1 + product).scale(half);
         data[j] = (part1 - product).scale(half).conj();
     }
