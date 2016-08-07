@@ -10,10 +10,8 @@ transform][1].
 ```rust
 use dft::{Operation, Plan, c64};
 
-let size = 512;
-let plan = Plan::new(Operation::Forward, size);
-let mut data = vec![c64::new(42.0, 69.0); size];
-
+let plan = Plan::new(Operation::Forward, 512);
+let mut data = vec![c64::new(42.0, 69.0); 512];
 dft::transform(&mut data, &plan);
 ```
 

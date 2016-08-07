@@ -2,33 +2,29 @@
 //!
 //! The `Transform` trait is responsible for performing the transform. The trait
 //! is implemented for real and complex data, which are represented by `[f64]`
-//! and `[c64]`, respectively. There are three transformation operations
-//! available: forward, backward, and inverse. The desired operation is
-//! specified by the `Operation` enumeration passed to the `Plan::new` function,
-//! which precomputes auxiliary information needed for `Transform::transform`.
+//! and `[c64]`, respectively. There are three operations available: forward,
+//! backward, and inverse. The desired operation is specified by the `Operation`
+//! enumeration passed to the `Plan::new` function, which precomputes auxiliary
+//! information needed for `Transform::transform`. All the operations are
+//! preformed in place.
+//!
+//! When applied to real data, `Transform::transform` works as follows. If the
+//! operation is `Operation::Forward`, the data are replaced by the positive
+//! frequency half of their complex Fourier transform. The first and last
+//! components of the complex transform, which are real, are stored in `self[0]`
+//! and `self[1]`, respectively. Regarding the other two operations, the data
+//! are assumed to be packed in the aforementioned format. See the reference
+//! below for further details.
 //!
 //! ## Example
 //!
 //! ```
 //! use dft::{Operation, Plan, c64};
 //!
-//! let size = 512;
-//! let plan = Plan::new(Operation::Forward, size);
-//! let mut data = vec![c64::new(42.0, 69.0); size];
-//!
+//! let plan = Plan::new(Operation::Forward, 512);
+//! let mut data = vec![c64::new(42.0, 69.0); 512];
 //! dft::transform(&mut data, &plan);
 //! ```
-//!
-//! ## Real Data
-//!
-//! When applied to real data, `Transform::transform` works as follows. If the
-//! operation is `Operation::Forward`, the data are replaced by the positive
-//! frequency half of their complex Fourier transform. The real-valued first and
-//! last components of the complex transform are returned as elements `self[0]`
-//! and `self[1]`, respectively. If the operation is `Operation::Backward` or
-//! `Operation::Inverse`, the function assumes that the data are packed in the
-//! format that has just been described. See the reference below for further
-//! information on the format.
 //!
 //! ## References
 //!
@@ -51,18 +47,18 @@ mod real;
 
 pub use real::unpack;
 
-/// A transformation operation.
+/// A transform operation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Operation {
-    /// The forward transform.
+    /// A forward transform.
     Forward,
-    /// The backward transform.
+    /// A backward transform.
     Backward,
-    /// The inverse transform.
+    /// A inverse transform.
     Inverse,
 }
 
-/// A transformation plan.
+/// A transform plan.
 #[derive(Clone, Debug)]
 pub struct Plan {
     size: usize,
@@ -70,14 +66,14 @@ pub struct Plan {
     operation: Operation,
 }
 
-/// A type suitable for transformation.
+/// The transform.
 pub trait Transform {
     /// Perform the transform.
     fn transform(&mut self, &Plan);
 }
 
 impl Plan {
-    /// Create a plan for a specific operation and number of points.
+    /// Create a plan for a specific operation and specific number of points.
     ///
     /// The number of points should be a power of two.
     pub fn new(operation: Operation, size: usize) -> Plan {
@@ -105,7 +101,7 @@ impl Plan {
 
 /// Perform the transform.
 ///
-/// The function is the same as `Transform::transform`.
+/// The function is a shortcut for `Transform::transform`.
 #[inline(always)]
 pub fn transform<T: Transform + ?Sized>(data: &mut T, plan: &Plan) {
     Transform::transform(data, plan);
