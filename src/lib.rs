@@ -1,20 +1,19 @@
 //! [Discrete Fourier transform][1].
 //!
 //! The `Transform` trait is responsible for performing the transform. The trait
-//! is implemented for real and complex data, which are represented by `[f64]`
-//! and `[c64]`, respectively. There are three operations available: forward,
-//! backward, and inverse. The desired operation is specified by the `Operation`
-//! enumeration passed to the `Plan::new` function, which precomputes auxiliary
-//! information needed for `Transform::transform`. All the operations are
-//! preformed in place.
+//! is implemented for both real and complex data. There are three transform
+//! operations available: forward, backward, and inverse. The desired operation
+//! is specified by the `Operation` enumeration passed to the `Plan::new`
+//! function, which precomputes auxiliary information needed for
+//! `Transform::transform`. All the operations are preformed in place.
 //!
 //! When applied to real data, `Transform::transform` works as follows. If the
 //! operation is `Operation::Forward`, the data are replaced by the positive
 //! frequency half of their complex Fourier transform. The first and last
 //! components of the complex transform, which are real, are stored in `self[0]`
 //! and `self[1]`, respectively. Regarding the other two operations, the data
-//! are assumed to be packed in the aforementioned format. See the reference
-//! below for further details.
+//! are assumed to be packed in the above format. See the reference below for
+//! further details.
 //!
 //! ## Example
 //!
@@ -34,13 +33,21 @@
 //!
 //! [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-extern crate num_complex as num;
+extern crate num_complex;
+extern crate num_traits;
+
+use num_complex::Complex;
+use num_traits::Float;
+
+/// A complex number with 32-bit parts.
+#[allow(non_camel_case_types)]
+pub type c32 = Complex<f32>;
 
 /// A complex number with 64-bit parts.
 #[allow(non_camel_case_types)]
-pub type c64 = num::Complex<f64>;
+pub type c64 = Complex<f64>;
 
-macro_rules! c(($re:expr, $im:expr) => (::num::Complex::new($re, $im)));
+macro_rules! c(($re:expr, $im:expr) => (::num_complex::Complex::new($re, $im)));
 
 mod complex;
 mod real;
@@ -50,44 +57,46 @@ pub use real::unpack;
 /// A transform operation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Operation {
-    /// A forward transform.
+    /// The forward transform.
     Forward,
-    /// A backward transform.
+    /// The backward transform.
     Backward,
-    /// A inverse transform.
+    /// The inverse transform.
     Inverse,
 }
 
 /// A transform plan.
 #[derive(Clone, Debug)]
-pub struct Plan {
-    size: usize,
-    factors: Vec<c64>,
+pub struct Plan<T> {
+    n: usize,
+    factors: Vec<Complex<T>>,
     operation: Operation,
 }
 
 /// The transform.
-pub trait Transform {
+pub trait Transform<T> {
     /// Perform the transform.
-    fn transform(&mut self, &Plan);
+    fn transform(&mut self, &Plan<T>);
 }
 
-impl Plan {
+impl<T> Plan<T> where T: Float {
     /// Create a plan for a specific operation and specific number of points.
     ///
     /// The number of points should be a power of two.
-    pub fn new(operation: Operation, size: usize) -> Plan {
-        use std::f64::consts::PI;
-
-        assert!(size.is_power_of_two(), "the number of points should be a power of two");
+    pub fn new(operation: Operation, n: usize) -> Self {
+        assert!(n.is_power_of_two());
+        let zero = T::zero();
+        let one = T::one();
+        let two = one + one;
+        let pi = T::acos(-one);
         let mut factors = vec![];
-        let sign = if let Operation::Forward = operation { -1.0 } else { 1.0 };
+        let sign = if let Operation::Forward = operation { -one } else { one };
         let mut step = 1;
-        while step < size {
+        while step < n {
             let (multiplier, mut factor) = {
-                let theta = PI / step as f64;
-                let sine = (0.5 * theta).sin();
-                (c!(-2.0 * sine * sine, sign * theta.sin()), c!(1.0, 0.0))
+                let theta = pi / T::from(step).unwrap();
+                let sine = (theta / two).sin();
+                (c!(-two * sine * sine, sign * theta.sin()), c!(one, zero))
             };
             for _ in 0..step {
                 factors.push(factor);
@@ -95,7 +104,7 @@ impl Plan {
             }
             step <<= 1;
         }
-        Plan { size: size, factors: factors, operation: operation }
+        Plan { n: n, factors: factors, operation: operation }
     }
 }
 
@@ -103,6 +112,6 @@ impl Plan {
 ///
 /// The function is a shortcut for `Transform::transform`.
 #[inline(always)]
-pub fn transform<T: Transform + ?Sized>(data: &mut T, plan: &Plan) {
+pub fn transform<D: ?Sized, T>(data: &mut D, plan: &Plan<T>) where D: Transform<T> {
     Transform::transform(data, plan);
 }

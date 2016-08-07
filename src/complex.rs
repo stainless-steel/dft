@@ -1,12 +1,15 @@
 // The implementation is based on:
 // http://www.librow.com/articles/article-10
 
-use {Operation, Plan, Transform, c64};
+use num_complex::Complex;
+use num_traits::Float;
 
-impl Transform for [c64] {
-    fn transform(&mut self, plan: &Plan) {
+use {Operation, Plan, Transform};
+
+impl<T> Transform<T> for [Complex<T>] where T: Float {
+    fn transform(&mut self, plan: &Plan<T>) {
         let n = self.len();
-        assert!(n <= plan.size, "the plan is not appropriate for the dataset");
+        assert!(n <= plan.n);
         rearrange(self, n);
         calculate(self, n, &plan.factors);
         if let Operation::Inverse = plan.operation {
@@ -15,15 +18,15 @@ impl Transform for [c64] {
     }
 }
 
-impl Transform for Vec<c64> {
+impl<T> Transform<T> for Vec<Complex<T>> where T: Float {
     #[inline(always)]
-    fn transform(&mut self, plan: &Plan) {
-        Transform::transform(self as &mut [c64], plan)
+    fn transform(&mut self, plan: &Plan<T>) {
+        Transform::transform(&mut self[..], plan)
     }
 }
 
 #[inline(always)]
-fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
+fn calculate<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>]) where T: Float {
     let mut k = 0;
     let mut step = 1;
     while step < n {
@@ -43,7 +46,7 @@ fn calculate(data: &mut [c64], n: usize, factors: &[c64]) {
 }
 
 #[inline(always)]
-fn rearrange(data: &mut [c64], n: usize) {
+fn rearrange<T>(data: &mut [Complex<T>], n: usize) {
     let mut j = 0;
     for i in 0..n {
         if j > i {
@@ -59,8 +62,8 @@ fn rearrange(data: &mut [c64], n: usize) {
 }
 
 #[inline(always)]
-fn scale(data: &mut [c64], n: usize) {
-    let factor = 1.0 / n as f64;
+fn scale<T>(data: &mut [Complex<T>], n: usize) where T: Float {
+    let factor = T::from(n).unwrap().recip();
     for i in 0..n {
         data[i] = data[i].scale(factor);
     }
