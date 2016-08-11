@@ -7,13 +7,13 @@
 //! function, which precomputes auxiliary information needed for
 //! `Transform::transform`. All the operations are preformed in place.
 //!
-//! When applied to real data, `Transform::transform` works as follows. If the
-//! operation is `Operation::Forward`, the data are replaced by the positive
-//! frequency half of their complex Fourier transform. The first and last
-//! components of the complex transform, which are real, are stored in `self[0]`
-//! and `self[1]`, respectively. Regarding the other two operations, the data
-//! are assumed to be packed in the above format. See the reference below for
-//! further details.
+//! When applied to real data, the transform works as follows. If the operation
+//! is forward, the data are replaced by the positive frequency half of their
+//! complex transform. The first and last components of the complex transform,
+//! which are real, are stored in `self[0]` and `self[1]`, respectively. If the
+//! operation is backward or inverse, the data are assumed to be stored
+//! according to the above convention. See the reference below for further
+//! details.
 //!
 //! ## Example
 //!
