@@ -3,7 +3,7 @@
 The package provides an algorithm to compute the [discrete Fourier
 transform][1].
 
-## [Documentation][doc]
+## [Documentation][documentation]
 
 ## Example
 
@@ -23,8 +23,8 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-[version-img]: https://img.shields.io/crates/v/dft.svg
-[version-url]: https://crates.io/crates/dft
+[documentation]: https://docs.rs/dft
 [status-img]: https://travis-ci.org/stainless-steel/dft.svg?branch=master
 [status-url]: https://travis-ci.org/stainless-steel/dft
-[doc]: https://stainless-steel.github.io/dft
+[version-img]: https://img.shields.io/crates/v/dft.svg
+[version-url]: https://crates.io/crates/dft

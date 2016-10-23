@@ -1,10 +1,10 @@
 [package]
 name = "dft"
-version = "0.5.1"
+version = "0.5.2"
 license = "Apache-2.0/MIT"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 description = "The package provides an algorithm to compute the discrete Fourier transform."
-documentation = "https://stainless-steel.github.io/dft"
+documentation = "https://docs.rs/dft"
 homepage = "https://github.com/stainless-steel/dft"
 repository = "https://github.com/stainless-steel/dft"
 
