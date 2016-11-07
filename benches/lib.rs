@@ -25,11 +25,13 @@ use test::{Bencher, black_box};
 fn complex(size: usize, bencher: &mut Bencher) {
     let mut data = vec![c64::new(42.0, 69.0); size];
     let plan = Plan::new(Operation::Forward, size);
+    bencher.bytes = size as u64;
     bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }
 
 fn real(size: usize, bencher: &mut Bencher) {
     let mut data = vec![42.0; 2 * size];
     let plan = Plan::new(Operation::Forward, 2 * size);
+    bencher.bytes = size as u64;
     bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }
