@@ -34,9 +34,11 @@ fn calculate<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>]) where
         for mut i in 0..step {
             while i < n {
                 let j = i + step;
-                let product = factors[k] * data[j];
-                data[j] = data[i] - product;
-                data[i] = data[i] + product;
+                unsafe {
+                    let product = *factors.get_unchecked(k) * *data.get_unchecked(j);
+                    *data.get_unchecked_mut(j) = *data.get_unchecked(i) - product;
+                    *data.get_unchecked_mut(i) = *data.get_unchecked(i) + product;
+                }
                 i += jump;
             }
             k += 1;
