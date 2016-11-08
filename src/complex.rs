@@ -64,7 +64,7 @@ fn rearrange<T>(data: &mut [Complex<T>], n: usize) {
 #[inline(always)]
 fn scale<T>(data: &mut [Complex<T>], n: usize) where T: Float {
     let factor = T::from(n).unwrap().recip();
-    for i in 0..n {
-        data[i] = data[i].scale(factor);
+    for value in data {
+        *value = value.scale(factor);
     }
 }
