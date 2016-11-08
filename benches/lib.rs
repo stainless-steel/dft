@@ -4,6 +4,7 @@ extern crate dft;
 extern crate test;
 
 use std::mem;
+
 use dft::{Operation, Plan, c64};
 use test::{Bencher, black_box};
 
@@ -36,13 +37,13 @@ use test::{Bencher, black_box};
 fn complex(size: usize, bencher: &mut Bencher) {
     let mut data = vec![c64::new(42.0, 69.0); size];
     let plan = Plan::new(Operation::Forward, size);
-    bencher.bytes = (data.len() * mem::size_of_val(&data[0])) as u64;
+    bencher.bytes = (data.len() * mem::size_of::<c64>()) as u64;
     bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }
 
 fn real(size: usize, bencher: &mut Bencher) {
     let mut data = vec![42.0; 2 * size];
     let plan = Plan::new(Operation::Forward, 2 * size);
-    bencher.bytes = (data.len() * mem::size_of_val(&data[0])) as u64;
+    bencher.bytes = (data.len() * mem::size_of::<f64>()) as u64;
     bencher.iter(|| black_box(dft::transform(&mut data, &plan)));
 }
