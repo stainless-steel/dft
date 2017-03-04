@@ -1,6 +1,6 @@
 [package]
 name = "dft"
-version = "0.5.3"
+version = "0.5.4"
 license = "Apache-2.0/MIT"
 authors = [
     "Ivan Ukhov <ivan.ukhov@gmail.com>",
@@ -10,6 +10,8 @@ description = "The package provides an algorithm to compute the discrete Fourier
 documentation = "https://docs.rs/dft"
 homepage = "https://github.com/stainless-steel/dft"
 repository = "https://github.com/stainless-steel/dft"
+categories = ["algorithms", "science"]
+keywords = ["fourier", "transform"]
 
 [dependencies]
 num-complex = { version = "0.1.35", default-features = false }
