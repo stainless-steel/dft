@@ -67,7 +67,7 @@ pub enum Operation {
 #[derive(Clone, Debug)]
 pub struct Plan<T> {
     n: usize,
-    factors: Vec<Complex<T>>,
+    factors: Box<[Complex<T>]>,
     operation: Operation,
 }
 
@@ -100,7 +100,7 @@ impl<T> Plan<T> where T: Float + FloatConst {
             }
             step <<= 1;
         }
-        Plan { n: n, factors: factors, operation: operation }
+        Plan { n: n, factors: factors.into_boxed_slice(), operation: operation }
     }
 }
 
