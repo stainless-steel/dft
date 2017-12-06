@@ -73,7 +73,7 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
         return;
     }
     let m = factors.len();
-    let sign = if inverse { Complex::i() } else { -Complex::i() };
+    let sign : Complex<T> = if inverse { Complex::i() } else { -Complex::i() };
     for i in 1..h {
         let j = n - i;
         let part1 = data[i] + data[j].conj();
