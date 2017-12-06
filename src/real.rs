@@ -102,29 +102,29 @@ mod tests {
     #[test]
     fn unpack() {
         let data = (0..4).map(|i| (i + 1) as f64).collect::<Vec<_>>();
-        assert_eq!(
-            super::unpack(&data),
-            vec![
-                c64::new(1.0, 0.0),
-                c64::new(3.0, 4.0),
-                c64::new(2.0, 0.0),
-                c64::new(3.0, -4.0),
-            ]
+        assert!(
+            super::unpack(&data)
+                == vec![
+                    c64::new(1.0, 0.0),
+                    c64::new(3.0, 4.0),
+                    c64::new(2.0, 0.0),
+                    c64::new(3.0, -4.0),
+                ]
         );
 
         let data = (0..8).map(|i| (i + 1) as f64).collect::<Vec<_>>();
-        assert_eq!(
-            super::unpack(&data),
-            vec![
-                c64::new(1.0, 0.0),
-                c64::new(3.0, 4.0),
-                c64::new(5.0, 6.0),
-                c64::new(7.0, 8.0),
-                c64::new(2.0, 0.0),
-                c64::new(7.0, -8.0),
-                c64::new(5.0, -6.0),
-                c64::new(3.0, -4.0),
-            ]
+        assert!(
+            super::unpack(&data)
+                == vec![
+                    c64::new(1.0, 0.0),
+                    c64::new(3.0, 4.0),
+                    c64::new(5.0, 6.0),
+                    c64::new(7.0, 8.0),
+                    c64::new(2.0, 0.0),
+                    c64::new(7.0, -8.0),
+                    c64::new(5.0, -6.0),
+                    c64::new(3.0, -4.0),
+                ]
         );
     }
 }

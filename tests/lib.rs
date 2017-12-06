@@ -9,14 +9,14 @@ mod fixtures;
 fn complex_forward_1() {
     let mut data = vec![c64::new(1.0, -2.0)];
     transform(&mut data, &Plan::new(Operation::Forward, 1));
-    assert_eq!(data, vec![c64::new(1.0, -2.0)]);
+    assert!(data == vec![c64::new(1.0, -2.0)]);
 }
 
 #[test]
 fn complex_forward_2() {
     let mut data = vec![c64::new(1.0, -2.0), c64::new(3.0, -4.0)];
     transform(&mut data, &Plan::new(Operation::Forward, 2));
-    assert_eq!(data, vec![c64::new(4.0, -6.0), c64::new(-2.0, 2.0)]);
+    assert!(data == vec![c64::new(4.0, -6.0), c64::new(-2.0, 2.0)]);
 }
 
 #[test]
@@ -48,28 +48,28 @@ fn complex_inverse_128() {
 fn real_forward_1() {
     let mut data = vec![1.0];
     transform(&mut data, &Plan::new(Operation::Forward, 1));
-    assert_eq!(unpack(&data), vec![c64::new(1.0, 0.0)]);
+    assert!(unpack(&data) == vec![c64::new(1.0, 0.0)]);
 }
 
 #[test]
 fn real_forward_2() {
     let mut data = vec![1.0, -2.0];
     transform(&mut data, &Plan::new(Operation::Forward, 2));
-    assert_eq!(unpack(&data), vec![c64::new(-1.0, 0.0), c64::new(3.0, 0.0)]);
+    assert!(unpack(&data) == vec![c64::new(-1.0, 0.0), c64::new(3.0, 0.0)]);
 }
 
 #[test]
 fn real_forward_4() {
     let mut data = vec![1.0, -2.0, 3.0, -4.0];
     transform(&mut data, &Plan::new(Operation::Forward, 4));
-    assert_eq!(
-        unpack(&data),
-        vec![
-            c64::new(-2.0, 0.0),
-            c64::new(-2.0, -2.0),
-            c64::new(10.0, 0.0),
-            c64::new(-2.0, 2.0),
-        ]
+    assert!(
+        unpack(&data)
+            == vec![
+                c64::new(-2.0, 0.0),
+                c64::new(-2.0, -2.0),
+                c64::new(10.0, 0.0),
+                c64::new(-2.0, 2.0),
+            ]
     );
 }
 
