@@ -3,6 +3,7 @@ name = "dft"
 version = "0.5.4"
 license = "Apache-2.0/MIT"
 authors = [
+    "Christopher J. Woodall <chris.j.woodall@gmail.com>",
     "Ivan Ukhov <ivan.ukhov@gmail.com>",
     "Karol Harasim <karol.harasim@gmail.com>",
 ]
