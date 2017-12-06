@@ -6,7 +6,10 @@ use num_traits::Float;
 
 use {Operation, Plan, Transform};
 
-impl<T> Transform<T> for [Complex<T>] where T: Float {
+impl<T> Transform<T> for [Complex<T>]
+where
+    T: Float,
+{
     fn transform(&mut self, plan: &Plan<T>) {
         let n = self.len();
         assert!(n <= plan.n);
@@ -18,7 +21,10 @@ impl<T> Transform<T> for [Complex<T>] where T: Float {
     }
 }
 
-impl<T> Transform<T> for Vec<Complex<T>> where T: Float {
+impl<T> Transform<T> for Vec<Complex<T>>
+where
+    T: Float,
+{
     #[inline(always)]
     fn transform(&mut self, plan: &Plan<T>) {
         Transform::transform(&mut self[..], plan)
@@ -26,7 +32,10 @@ impl<T> Transform<T> for Vec<Complex<T>> where T: Float {
 }
 
 #[inline(always)]
-fn calculate<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>]) where T: Float {
+fn calculate<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>])
+where
+    T: Float,
+{
     let mut k = 0;
     let mut step = 1;
     while step < n {
@@ -64,7 +73,10 @@ fn rearrange<T>(data: &mut [Complex<T>], n: usize) {
 }
 
 #[inline(always)]
-fn scale<T>(data: &mut [Complex<T>], n: usize) where T: Float {
+fn scale<T>(data: &mut [Complex<T>], n: usize)
+where
+    T: Float,
+{
     let factor = T::from(n).unwrap().recip();
     for value in data {
         *value = value.scale(factor);

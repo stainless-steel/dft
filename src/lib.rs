@@ -77,7 +77,10 @@ pub trait Transform<T> {
     fn transform(&mut self, &Plan<T>);
 }
 
-impl<T> Plan<T> where T: Float + FloatConst {
+impl<T> Plan<T>
+where
+    T: Float + FloatConst,
+{
     /// Create a plan for a specific operation and specific number of points.
     ///
     /// The number of points should be a power of two.
@@ -86,13 +89,20 @@ impl<T> Plan<T> where T: Float + FloatConst {
         let one = T::one();
         let two = one + one;
         let mut factors = vec![];
-        let sign = if let Operation::Forward = operation { -one } else { one };
+        let sign = if let Operation::Forward = operation {
+            -one
+        } else {
+            one
+        };
         let mut step = 1;
         while step < n {
             let (multiplier, mut factor) = {
                 let theta = T::PI() / T::from(step).unwrap();
                 let sine = (theta / two).sin();
-                (Complex::new(-two * sine * sine, sign * theta.sin()), Complex::one())
+                (
+                    Complex::new(-two * sine * sine, sign * theta.sin()),
+                    Complex::one(),
+                )
             };
             for _ in 0..step {
                 factors.push(factor);
@@ -100,7 +110,11 @@ impl<T> Plan<T> where T: Float + FloatConst {
             }
             step <<= 1;
         }
-        Plan { n: n, factors: factors, operation: operation }
+        Plan {
+            n: n,
+            factors: factors,
+            operation: operation,
+        }
     }
 }
 
@@ -108,6 +122,9 @@ impl<T> Plan<T> where T: Float + FloatConst {
 ///
 /// The function is a shortcut for `Transform::transform`.
 #[inline(always)]
-pub fn transform<D: ?Sized, T>(data: &mut D, plan: &Plan<T>) where D: Transform<T> {
+pub fn transform<D: ?Sized, T>(data: &mut D, plan: &Plan<T>)
+where
+    D: Transform<T>,
+{
     Transform::transform(data, plan);
 }

@@ -4,7 +4,7 @@ extern crate dft;
 extern crate test;
 
 use dft::{Operation, Plan, c64};
-use test::{Bencher, black_box};
+use test::{black_box, Bencher};
 
 #[bench] fn complex_0004(bencher: &mut Bencher) { complex(   4, bencher); }
 #[bench] fn complex_0008(bencher: &mut Bencher) { complex(   8, bencher); }

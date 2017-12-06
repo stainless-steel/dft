@@ -4,7 +4,10 @@ use std::slice::from_raw_parts_mut;
 
 use {Operation, Plan, Transform};
 
-impl<T> Transform<T> for [T] where T: Float {
+impl<T> Transform<T> for [T]
+where
+    T: Float,
+{
     fn transform(&mut self, plan: &Plan<T>) {
         let n = self.len();
         assert!(n == plan.n);
@@ -17,16 +20,19 @@ impl<T> Transform<T> for [T] where T: Float {
             Operation::Forward => {
                 data.transform(plan);
                 compose(data, h, &plan.factors, false);
-            },
+            }
             Operation::Backward | Operation::Inverse => {
                 compose(data, h, &plan.factors, true);
                 data.transform(plan);
-            },
+            }
         }
     }
 }
 
-impl<T> Transform<T> for Vec<T> where T: Float {
+impl<T> Transform<T> for Vec<T>
+where
+    T: Float,
+{
     #[inline(always)]
     fn transform(&mut self, plan: &Plan<T>) {
         Transform::transform(&mut self[..], plan)
@@ -38,7 +44,10 @@ impl<T> Transform<T> for Vec<T> where T: Float {
 /// The function decodes the result of an application of `Transform::transform`
 /// with `Operation::Forward` to real data. See the top-level description of the
 /// crate for further details.
-pub fn unpack<T>(data: &[T]) -> Vec<Complex<T>> where T: Float {
+pub fn unpack<T>(data: &[T]) -> Vec<Complex<T>>
+where
+    T: Float,
+{
     let n = data.len();
     assert!(n.is_power_of_two());
     let h = n >> 1;
@@ -60,7 +69,8 @@ pub fn unpack<T>(data: &[T]) -> Vec<Complex<T>> where T: Float {
 
 #[inline(always)]
 fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse: bool)
-    where T: Float
+where
+    T: Float,
 {
     let one = T::one();
     let half = (one + one).recip();
@@ -73,7 +83,7 @@ fn compose<T>(data: &mut [Complex<T>], n: usize, factors: &[Complex<T>], inverse
         return;
     }
     let m = factors.len();
-    let sign : Complex<T> = if inverse { Complex::i() } else { -Complex::i() };
+    let sign: Complex<T> = if inverse { Complex::i() } else { -Complex::i() };
     for i in 1..h {
         let j = n - i;
         let part1 = data[i] + data[j].conj();
@@ -92,14 +102,29 @@ mod tests {
     #[test]
     fn unpack() {
         let data = (0..4).map(|i| (i + 1) as f64).collect::<Vec<_>>();
-        assert_eq!(super::unpack(&data), vec![
-            c64::new(1.0, 0.0), c64::new(3.0, 4.0), c64::new(2.0, 0.0), c64::new(3.0, -4.0),
-        ]);
+        assert_eq!(
+            super::unpack(&data),
+            vec![
+                c64::new(1.0, 0.0),
+                c64::new(3.0, 4.0),
+                c64::new(2.0, 0.0),
+                c64::new(3.0, -4.0),
+            ]
+        );
 
         let data = (0..8).map(|i| (i + 1) as f64).collect::<Vec<_>>();
-        assert_eq!(super::unpack(&data), vec![
-            c64::new(1.0, 0.0), c64::new(3.0,  4.0), c64::new(5.0,  6.0), c64::new(7.0,  8.0),
-            c64::new(2.0, 0.0), c64::new(7.0, -8.0), c64::new(5.0, -6.0), c64::new(3.0, -4.0),
-        ]);
+        assert_eq!(
+            super::unpack(&data),
+            vec![
+                c64::new(1.0, 0.0),
+                c64::new(3.0, 4.0),
+                c64::new(5.0, 6.0),
+                c64::new(7.0, 8.0),
+                c64::new(2.0, 0.0),
+                c64::new(7.0, -8.0),
+                c64::new(5.0, -6.0),
+                c64::new(3.0, -4.0),
+            ]
+        );
     }
 }
