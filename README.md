@@ -1,9 +1,7 @@
-# DFT [![Version][version-img]][version-url] [![Status][status-img]][status-url]
+# DFT [![Package][package-img]][package-url] [![Documentation][documentation-img]][documentation-url] [![Build][build-img]][build-url]
 
 The package provides an algorithm to compute the [discrete Fourier
 transform][1].
-
-## [Documentation][documentation]
 
 ## Example
 
@@ -23,8 +21,9 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [1]: https://en.wikipedia.org/wiki/Discrete_Fourier_transform
 
-[documentation]: https://docs.rs/dft
-[status-img]: https://travis-ci.org/stainless-steel/dft.svg?branch=master
-[status-url]: https://travis-ci.org/stainless-steel/dft
-[version-img]: https://img.shields.io/crates/v/dft.svg
-[version-url]: https://crates.io/crates/dft
+[build-img]: https://travis-ci.org/stainless-steel/dft.svg?branch=master
+[build-url]: https://travis-ci.org/stainless-steel/dft
+[documentation-img]: https://docs.rs/dft/badge.svg
+[documentation-url]: https://docs.rs/dft
+[package-img]: https://img.shields.io/crates/v/dft.svg
+[package-url]: https://crates.io/crates/dft

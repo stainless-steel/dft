@@ -11,6 +11,7 @@ description = "The package provides an algorithm to compute the discrete Fourier
 documentation = "https://docs.rs/dft"
 homepage = "https://github.com/stainless-steel/dft"
 repository = "https://github.com/stainless-steel/dft"
+readme = "README.md"
 categories = ["algorithms", "science"]
 keywords = ["fourier", "transform"]
 
